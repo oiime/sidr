@@ -1,0 +1,10 @@
+<div class="box box-solid box-danger" data-ng-messages="serverErrors" data-ng-show="serverErrors.length > 0" data-ng-cloak>
+  <div class="box-header">
+    <h3 class="box-title">Error</h3>
+  </div><!-- /.box-header -->
+  <div class="box-body">
+      <p ng-repeat="msg in serverErrors">
+        {{msg}}
+      </p>
+  </div><!-- /.box-body -->
+</div>

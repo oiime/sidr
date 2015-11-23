@@ -1,0 +1,44 @@
+<a class="btn" ui-sref="signed.tag({tag_class: tag_class})">
+    <i class="fa fa-plus fa-lg"></i> Add new {{tagClassName}}
+</a>
+
+<div class="box">
+  <div class="box-body">
+    <div class="dataTables_wrapper form-inline dt-bootstrap">
+      <div loading-container="tableParams.settings().$loading">
+          <table ng-table="tableParams" class="table table-bordered table-hover dataTable">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th ng-repeat="(fieldname, field) in tagClassStructure" ng-if="fieldname != 'name' && fieldname != 'title'">{{field.title}}</th>
+                  <th>&nbsp;</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="tag in $data">
+                    <td>
+                      <ol class="breadcrumb">
+                        <li ng-repeat="elm in tag.tree">{{elm.title}}</li>
+                        <li>{{tag.title}}</li>
+                      </ol>
+                    </td>
+                    <td ng-repeat="(fieldname, field) in tagClassStructure" ng-if="fieldname != 'name' && fieldname != 'title'" style="word-wrap:break-word;">
+                      {{tag[fieldname]}}
+                    </td>
+                    <td class="pull-right" style="width:12em;">
+                        <div class="btn-group" role="group">
+                          <a class="btn btn-danger" href="#" ng-click="actions.delete(tag, $index)">
+                              <i class="fa fa-trash-o fa-lg"></i> Delete
+                          </a>
+                          <a class="btn btn-success" ui-sref="signed.tag({id: tag.id})">
+                              <i class="fa fa-pencil fa-lg"></i> Edit
+                          </a>
+                        </div>
+                    </td>
+                </tr>
+              </tbody>
+          </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,28 @@
+<a class="btn" ui-sref="signed.domain">
+    <i class="fa fa-plus fa-lg"></i> Add new domain
+</a>
+
+
+<div class="box">
+  <div loading-container="tableParams.settings().$loading">
+      <table ng-table="tableParams" show-filter="true" class="table table-striped">
+          <tr ng-repeat="domain in $data" role="row">
+              <td data-title="'ID'" filter="{ 'id': 'text' }" sortable="'id'">
+                  <a ui-sref="signed.domain({id: domain.id})">{{domain.id}}</a>
+              </td>
+              <td data-title="'Name'" filter="{ 'name': 'text' }" sortable="'name'">
+                  {{domain.name}}
+              </td>
+              <td data-title="'Display Name'" filter="{ 'name_display': 'text' }" sortable="'name_display'">
+                  {{domain.name_display}}
+              </td>
+              <td data-title="'Restrict Countries'" filter-data="countries" filter="{ 'restrict_countries': 'select' }" sortable="'restrict_countries'">
+                  <span ng-repeat="code in domain.restrict_countries">{{code}}{{$last ? '' : ', '}}</span>
+              </td>
+              <td data-title="'Event Types'" filter-data="event_types" filter="{ 'event_types': 'select' }" sortable="'event_types'">
+                  <span ng-repeat="event_type in domain.event_types">{{TagService.getById(event_type).title}}{{$last ? '' : ', '}}</span>
+              </td>
+          </tr>
+      </table>
+  </div>
+</div>

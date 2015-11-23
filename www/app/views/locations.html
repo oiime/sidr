@@ -1,0 +1,49 @@
+<div class="box">
+  <div class="form-group box-body">
+    <label class="col-sm-2 control-label">Upload location file:</label>
+    <div class="col-sm-4">
+      <input type="file" nv-file-select="" uploader="uploader" multiple  />
+    </div>
+    <div class="col-sm-8" style="margin-bottom: 40px">
+         <div>
+             <div ng-show="uploader.queue.length > 0">
+                 Queue progress:
+                 <div class="progress" style="">
+                     <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
+                 </div>
+             </div>
+         </div>
+
+      </div>
+  </div>
+</div>
+<div class="box">
+  <div loading-container="tableParams.settings().$loading">
+      <table ng-table="tableParams" show-filter="true" class="table table-striped">
+          <tr ng-repeat="location in $data track by location.id" role="row">
+              <td data-title="'country_code'" filter="{ 'country_code': 'text' }" sortable="'code'">
+                  {{location.country_code}}
+              </td>
+              <td data-title="'Code'" filter="{ 'code': 'text' }" sortable="'code'">
+                  {{location.code}}
+              </td>
+              <td data-title="'Name'" filter="{ 'name': 'text' }" sortable="'name'">
+                  {{location.name}}
+              </td>
+              <td data-title="'Level'" sortable="'level'">
+                  {{location.level}}
+              </td>
+              <td data-title="'longtitude'" sortable="'longtitude'">
+                  {{location.longtitude}}
+              </td>
+              <td data-title="'latitude'" sortable="'latitude'">
+                  {{location.latitude}}
+              </td>
+              <td data-title="'Actions'" style="min-width:180px;">
+                  <button class="btn btn-danger btn-circle" type="button" on-confirm="actions.changeStatus(location, $index, CONST.STATUS_DELETED)" tooltip="Delete" mwl-confirm message="Are you sure you want to delete this location?"><i class="fa fa-minus"></i></button>
+              </td>
+          </tr>
+
+      </table>
+  </div>
+</div>

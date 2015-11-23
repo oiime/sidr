@@ -1,0 +1,43 @@
+   <div class="register-box">
+      <div class="register-logo">
+        <a ui-sref="home"><b>HIRA</b>{{ENV.VERSION}}</a>
+      </div>
+
+      <div class="register-box-body">
+        <p class="login-box-msg">Register a new user</p>
+        <div ng-include="'views/snippets/form_errors.html'"/>
+
+        <form name="registerForm" data-ng-submit="actions.submit(registerForm, user)">
+          <div class="form-group has-feedback">
+            <input ng-model="user.name" type="text" class="form-control" placeholder="Full name" required/>
+            <span class="glyphicon glyphicon-user form-control-feedback"></span>
+          </div>
+          <div class="form-group has-feedback">
+            <input ng-model="user.email" type="email" class="form-control" placeholder="Email" required/>
+            <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+          </div>
+          <div class="form-group has-feedback">
+            <input ng-model="user.orgnization" type="text" class="form-control" placeholder="Orginization"/>
+            <span class="glyphicon form-control-feedback"></span>
+          </div>
+          <div class="form-group has-feedback">
+            <input ng-model="user.password" type="password" class="form-control" placeholder="Password" required/>
+            <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+          </div>
+          <div class="form-group has-feedback">
+            <input ng-model="user.password2" compare-password="user.password" type="password" class="form-control" placeholder="Retype password" required/>
+            <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
+          </div>
+          <div class="row">
+            <div class="col-xs-8">
+
+            </div><!-- /.col -->
+            <div class="col-xs-4">
+              <button type="submit" class="btn btn-primary btn-block btn-flat">Register</button>
+            </div><!-- /.col -->
+          </div>
+        </form>
+
+        <a ui-sref="login" class="text-center">Click here to login if you are already registerd</a>
+      </div><!-- /.form-box -->
+    </div><!-- /.register-box -->

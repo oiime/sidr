@@ -1,0 +1,117 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="box">
+      <form class="form-horizontal" name="leadForm">
+        <div class="box-body">
+          <div ng-include="'views/snippets/form_errors.html'"></div>
+          <div class="form-group">
+              <label class="col-sm-2 control-label">Name</label>
+              <div class="col-sm-10">
+                <input ng-model="lead.name" type="text" placeholder="Enter a descriptive name" class="form-control">
+              </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Source:</label>
+            <div class="col-sm-10">
+              <ui-select ng-model="lead.source_id" theme="bootstrap">
+                <ui-select-match placeholder="Select source type">{{$select.selected.title}}</ui-select-match>
+                <ui-select-choices repeat="tag.id as tag in tags | filter: $select.search">
+                  <div ng-bind-html="tag.title | highlight: $select.search"></div>
+                </ui-select-choices>
+              </ui-select>
+            </div>
+          </div>
+
+          <div ng-if="lead.lead_type == 'url'">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">URL</label>
+                <div class="col-sm-10">
+                  <input ng-model="lead.url" type="url" placeholder="Paste URL" class="form-control" ng-change="actions.updateWebsite(lead.url)">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Website</label>
+                <div class="col-sm-10">
+                  <input ng-model="lead.website" type="text" class="form-control">
+                </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+              <label class="col-sm-2 control-label">Published At</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="lead.published_at" is-open="published_at_open" data-ng-click="published_at_open = true" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+              </div>
+          </div>
+
+          <div class="form-group" ng-if="lead.lead_type == 'manual'">
+              <label class="col-sm-2 control-label">Description</label>
+              <div class="col-sm-10">
+                <textarea type="text" class="form-control" ng-model="lead.description" rows="5"/></textarea>
+              </div>
+          </div>
+
+
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Files:</label>
+            <div class="col-sm-4">
+              <input type="file" nv-file-select="" uploader="uploader" multiple  />
+            </div>
+            <div class="col-sm-8" style="margin-bottom: 40px">
+                   <table class="table">
+                     <tbody>
+                         <tr ng-repeat="binbag in lead.binbags">
+                            <td><a target="_self" href="{{ENV.apiEndpoint}}/binbag/{{binbag.id}}/content?reference={{binbag.reference}}&auth={{ENV.Authorization}}" download="{{binbag.name}}"><strong>{{ binbag.name }}</strong></td>
+                            <td>{{binbag.mime}}</td>
+                         </tr>
+                         <tr ng-repeat="item in uploader.queue">
+                             <td><strong>{{ item.file.name }}</strong></td>
+                             <td ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
+                             <td ng-show="uploader.isHTML5">
+                                 <div class="progress" style="margin-bottom: 0;">
+                                     <div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
+                                 </div>
+                             </td>
+                             <td class="text-center">
+                                 <span ng-show="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
+                                 <span ng-show="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
+                                 <span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
+                             </td>
+                             <!--
+                             <td nowrap>
+                                 <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+                                     <span class="glyphicon glyphicon-upload"></span> Upload
+                                 </button>
+                                 <button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
+                                     <span class="glyphicon glyphicon-ban-circle"></span> Cancel
+                                 </button>
+                                 <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
+                                     <span class="glyphicon glyphicon-trash"></span> Remove
+                                 </button>
+                             </td>
+                           -->
+                         </tr>
+                     </tbody>
+                 </table>
+
+                 <div>
+                     <div ng-show="uploader.queue.length > 0">
+                         Queue progress:
+                         <div class="progress" style="">
+                             <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
+                         </div>
+                     </div>
+                 </div>
+
+              </div>
+          </div>
+        </div>
+        <div class="box-footer pull-right">
+          <button class="btn btn-info " ng-click="actions.submit(leadForm, lead, 'return')">Save</button>
+          <button class="btn btn-success" ng-click="actions.submit(leadForm, lead, 'next')">Save and Add another</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

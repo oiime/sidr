@@ -1,0 +1,78 @@
+<script type="text/ng-template" id="ng-table/filters/tag_selector.html">
+  <ui-select ng-model="params.filter()[name]" theme="bootstrap">
+    <ui-select-match>{{$select.selected.title}}</ui-select-match>
+    <ui-select-choices repeat="tag.id as tag in tagsSelectorPulldown | filter: {title: $select.search}">
+      <div ng-bind-html="tag.title | highlight: $select.search"></div>
+      <small ng-show="tag.tree.length > 0">
+        (<span ng-repeat="ptag in tag.tree">{{ptag.title}} </span>)
+      </small>
+    </ui-select-choices>
+  </ui-select>
+</script>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="pull-right btn-group">
+      <a href="{{exportUrls.csv}}" class="btn btn-active" tooltip="Export to CSV"><i class="fa fa-file-excel-o"></i></a>
+    </div>
+    <div class="pull-right btn-group">
+      <a href="{{exportUrls.json}}" class="btn btn-active" tooltip="Export to JSON"><i class="fa fa-download"></i></a>
+    </div>
+  </div>
+</div>
+<div class="box">
+  <div loading-container="tableParams.settings().$loading" class="table-responsive box-body">
+      <table ng-table="tableParams" show-filter="true" class="table table-striped">
+          <tr ng-repeat="entry in $data track by entry.id" role="row">
+              <td data-title="'Created'" filter="{ 'created_at': 'daterangepicker' }" sortable="'created_at'">
+                  {{entry.created_at | amDateFormat:'DD/MM/YYYY'}}
+                  <br/>
+                  <a ui-sref="signed.user({user_id: entry.user_id})">{{entry.user.name}}</a>
+              </td>
+              <td data-title="'Lead'" sortable="'lead_id'">
+                  <a ng-if="entry.lead.website" href="{{entry.lead.url}}">{{entry.lead.website}}</a>
+              </td>
+              <td data-title="'Information'" filter="{ 'information_at': 'daterangepicker' }" sortable="'information_at'">
+                  {{entry.information_at | amDateFormat:'DD/MM/YYYY'}}
+              </td>
+              <td data-title="'Excerpt'">
+                  {{entry.excerpt}}
+              </td>
+              <td data-title="'Tags'" filter="{ 'tag_ids': 'tag_selector' }", filter-data="tags" style="min-width:150px;">
+                  <p ng-repeat="(tag_class, utags) in entry.tags">
+                      <b>{{TagClassService.getClassTitle(tag_class)}}</b>
+                      <span ng-repeat="utag in utags">
+                        {{tagTitles[utag]}}{{$last ? '' : ', '}}
+                      </span>
+                  </p>
+              </td>
+              <td data-title="'Locations'" filter="{ 'locations': 'selector' }", filter-data="locations" style="min-width:100px;">
+                  <b>{{entry.country_code}}</b>
+                  <span ng-repeat="location in entry.locations">{{location.asciiname}}{{$last ? '' : ', '}}</span>
+              </td>
+              <td data-title="'Severity'" filter="{ 'severity': 'selector' }", filter-data="severityLevels" ng-class="{'bg-danger': entry.severity>3}">
+                  <b>{{entry.severity}}</b> {{severityTitles[entry.severity]}}
+              </td>
+              <td data-title="'Reliability'" filter="{ 'reliability': 'selector' }", filter-data="reliabilityLevels">
+                  <b>{{entry.reliability}}</b> {{reliabilityTitles[entry.reliability]}}
+              </td>
+              <td data-title="'Timeline'" filter="{ 'timeline': 'selector' }", filter-data="timelineLevels">
+                  {{timelineTitles[entry.timeline]}}
+              </td>
+              <td data-title="'Entry Status'" filter="{ 'status_ord': 'selector' }", filter-data="statusLevels">
+                  {{statusTitles[entry.status_ord]}}
+              </td>
+              <td data-title="'Status'" filter="{ 'status': 'selector' }" sortable="'status'" filter-data="entryStatusDropdown" ng-class="signedActions.getStatusClass(entry.status)">
+                  {{entryStatus[entry.status]}}
+              </td>
+              <td data-title="'Actions'" style="min-width:180px;">
+                  <button ng-if="entry.status == CONST.STATUS_ACTIVE" class="btn btn-warning btn-circle" type="button" ng-click="actions.changeStatus(entry, $index, CONST.STATUS_INACTIVE)" tooltip="Mark Inactive"><i class="fa fa-power-off"></i></button>
+                  <button ng-if="entry.status == CONST.STATUS_INACTIVE" class="btn btn-info btn-circle" type="button" ng-click="actions.changeStatus(entry, $index, CONST.STATUS_ACTIVE)" tooltip="Mark Active"><i class="fa fa-refresh"></i></button>
+                  <button class="btn btn-danger btn-circle" type="button" on-confirm="actions.changeStatus(entry, $index, CONST.STATUS_DELETED)" tooltip="Delete" mwl-confirm message="Are you sure you want to delete this entry?"><i class="fa fa-minus"></i></button>
+                  <a class="btn btn-primary btn-circle" ui-sref="signed.entry({id: entry.id})" tooltip="Edit"><i class="fa fa-pencil"></i></a>
+              </td>
+          </tr>
+
+      </table>
+  </div>
+</div>

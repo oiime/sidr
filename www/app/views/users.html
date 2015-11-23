@@ -1,0 +1,26 @@
+<div class="box">
+  <div loading-container="tableParams.settings().$loading">
+      <table ng-table="tableParams" show-filter="true" class="table table-striped">
+          <tr ng-repeat="user in $data track by user.id" role="row">
+              <td data-title="'Created'" filter="{ 'created_at': 'datepicker' }" sortable="'created_at'">
+                  {{user.created_at | amDateFormat:'DD/MM/YYYY'}}
+              </td>
+              <td data-title="'Name'" sortable="'name'">
+                  {{user.name}}
+              </td>
+              <td data-title="'Orgnization'" sortable="'organization'">
+                  {{user.orgnization}}
+              </td>
+              <td data-title="'Status'" filter="{ 'status': 'select' }" sortable="'status'" filter-data="userStatusDropdown">
+                  {{userStatus[user.status]}}
+              </td>
+              <td data-title="'Actions'" style="min-width:180px;">
+                  <button ng-if="user.status == CONST.STATUS_ACTIVE" class="btn btn-warning btn-circle" type="button" ng-click="actions.changeStatus(user, $index, CONST.STATUS_INACTIVE)" tooltip="Mark Inactive"><i class="fa fa-power-off"></i></button>
+                  <button ng-if="user.status == CONST.STATUS_INACTIVE" class="btn btn-info btn-circle" type="button" ng-click="actions.changeStatus(user, $index, CONST.STATUS_ACTIVE)" tooltip="Mark Active"><i class="fa fa-refresh"></i></button>
+                  <button class="btn btn-danger btn-circle" type="button" on-confirm="actions.changeStatus(user, $index, CONST.STATUS_DELETED)" tooltip="Delete" mwl-confirm message="Are you sure you want to delete this user?"><i class="fa fa-minus"></i></button>
+              </td>
+          </tr>
+
+      </table>
+  </div>
+</div>

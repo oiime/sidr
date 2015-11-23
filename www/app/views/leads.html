@@ -1,0 +1,61 @@
+
+<div class="row">
+  <div class="col-md-6">
+    <a class="btn" ng-repeat="(lead_type, name) in LeadService.leadTypes" ui-sref="signed.lead({id: null, lead_type: lead_type})">
+        <i class="fa fa-plus fa-lg"></i> Add {{name}}
+    </a>
+  </div>
+  <div class="col-md-6">
+    <div class="pull-right btn-group">
+      <a href="{{exportUrls.csv}}" class="btn btn-active" tooltip="Export to CSV"><i class="fa fa-file-excel-o"></i></a>
+    </div>
+    <div class="pull-right btn-group">
+      <a href="{{exportUrls.json}}" class="btn btn-active" tooltip="Export to JSON"><i class="fa fa-download"></i></a>
+    </div>
+  </div>
+</div>
+<div class="box">
+  <div loading-container="tableParams.settings().$loading" class="table-responsive box-body">
+      <table ng-table="tableParams" show-filter="true" class="table table-striped">
+          <tr ng-repeat="lead in $data track by lead.id" role="row">
+              <td data-title="'Created'" filter="{ 'created_at': 'daterangepicker' }" sortable="'created_at'">
+                  {{lead.created_at | amDateFormat:'DD/MM/YYYY'}}
+                  <br/>
+                  <a ui-sref="signed.user({user_id: lead.user_id})">{{lead.user.name}}</a>
+              </td>
+              <td data-title="'Name'" filter="{ 'name': 'text' }" sortable="'name'">
+                  {{lead.name}}
+              </td>
+              <td data-title="'Published'" filter="{ 'published_at': 'daterangepicker' }" sortable="'published_at'">
+                  {{lead.published_at | amDateFormat:'DD/MM/YYYY'}}
+              </td>
+              <td data-title="'Type'" filter="{ 'lead_type': 'selector' }" sortable="'lead_type'" filter-data="leadTypes">
+                  {{lead.lead_type}}
+              </td>
+              <td data-title="'Source'" filter="{ 'source_id': 'selector' }" sortable="'source_id'" filter-data="tagsPulldown">
+                  {{tagTitles[lead.source_id]}}
+              </td>
+              <td data-title="'Website'" filter="{ 'website': 'text' }" sortable="'website'">
+                  <a href="{{lead.url}}">{{lead.website}}</a>
+              </td>
+              <td data-title="'Documents'">
+                  <p ng-repeat="binbag in lead.binbags">
+                    <a target="_self" href="{{ENV.apiEndpoint}}/binbag/{{binbag.id}}/content?reference={{binbag.reference}}&auth={{ENV.Authorization}}" download="{{binbag.name}}">{{ binbag.name }}</a>
+                  </p>
+              </td>
+              <td data-title="'Status'" filter="{ 'status': 'selector' }" sortable="'status'"  filter-data="leadStatusDropdown" ng-class="signedActions.getStatusClass(lead.status)">
+                  {{leadStatus[lead.status]}}
+              </td>
+              <td data-title="'Actions'" style="min-width:200px;">
+                  <button ng-if="lead.status == CONST.STATUS_PENDING" class="btn btn-warning btn-circle" type="button" ng-click="actions.changeStatus(lead, $index, CONST.STATUS_INACTIVE)" tooltip="Mark Processed"><i class="fa fa-power-off"></i></button>
+                  <button ng-if="lead.status == CONST.STATUS_INACTIVE" class="btn btn-info btn-circle" type="button" ng-click="actions.changeStatus(lead, $index, CONST.STATUS_PENDING)" tooltip="Mark Pending"><i class="fa fa-refresh"></i></button>
+                  <button class="btn btn-danger btn-circle" type="button" on-confirm="actions.changeStatus(lead, $index, CONST.STATUS_DELETED)" tooltip="Delete" mwl-confirm message="Are you sure you want to delete this lead?"><i class="fa fa-minus"></i></button>
+                  <a class="btn btn-primary btn-circle" ui-sref="signed.lead({id: lead.id})" tooltip="Edit"><i class="fa fa-pencil"></i></a>
+                  <a class="btn btn-success btn-circle" ui-sref="signed.entry({id: null, lead_id: lead.id})" tooltip="Add Entries"><i class="fa fa-plus"></i> ({{lead.entries_count}})</a>
+
+              </td>
+          </tr>
+
+      </table>
+  </div>
+</div>

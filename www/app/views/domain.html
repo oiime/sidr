@@ -1,0 +1,61 @@
+<div class="row">
+  <div class="col-md-8 col-sm-12">
+    <div class="box">
+      <!-- form start -->
+      <form class="form-horizontal" name="domainForm" data-ng-submit="actions.submit(domainForm, domain)">
+        <div class="box-body">
+          <div ng-include="'views/snippets/form_errors.html'"/>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Name</label>
+            <div class="col-sm-10">
+              <input ng-model="domain.name" type="text" placeholder="Name" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Display Name</label>
+            <div class="col-sm-10">
+              <input ng-model="domain.name_display" type="text" placeholder="Display Name" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Description</label>
+            <div class="col-sm-10">
+              <textarea ng-model="domain.description" class="form-control" rows="5" placeholder="Enter a short description of the domain"></textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Countries:</label>
+            <div class="col-sm-10">
+              <ui-select multiple ng-model="domain.restrict_countries" theme="bootstrap" ng-disabled="disabled">
+                <ui-select-match placeholder="Select affected countries...">{{$item.name}} &lt;{{$item.code}}&gt;</ui-select-match>
+                <ui-select-choices repeat="country.code as country in countries | filter: {name: $select.search}">
+                  <div ng-bind-html="country.name | highlight: $select.search"></div>
+                  <small>
+                    {{country.code}}
+                  </small>
+                </ui-select-choices>
+              </ui-select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Event Types:</label>
+            <div class="col-sm-10">
+              <ui-select multiple ng-model="domain.event_types" theme="bootstrap" ng-disabled="disabled">
+                <ui-select-match placeholder="Select event types...">{{$item.title}}&gt;</ui-select-match>
+                <ui-select-choices repeat="tag.id as tag in tags | filter: {name: $select.search}">
+                  <div ng-bind-html="tag.title | highlight: $select.search"></div>
+                  <small>
+                    {{tag.description}}
+                  </small>
+                </ui-select-choices>
+              </ui-select>
+            </div>
+          </div>
+        </div><!-- /.box-body -->
+        <div class="box-footer">
+          <button class="btn btn-info pull-right" type="submit">Save</button>
+        </div><!-- /.box-footer -->
+      </form>
+    </div>
+  </div>
+</div>

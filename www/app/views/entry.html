@@ -1,0 +1,154 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="box">
+      <form class="form-horizontal" name="entryForm">
+        <div class="box-body">
+          <div ng-include="'views/snippets/form_errors.html'"></div>
+
+          <div class="form-group">
+              <label class="col-sm-2 control-label">Excerpt</label>
+              <div class="col-sm-10">
+                <textarea type="text" class="form-control" ng-model="entry.excerpt" rows="5"/></textarea>
+              </div>
+          </div>
+
+          <div class="form-group">
+              <label class="col-sm-2 control-label">Information At</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="entry.information_at" is-open="information_at_open" data-ng-click="information_at_open = true" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+              </div>
+          </div>
+
+          <div class="form-group">
+              <label class="col-sm-2 control-label">Country</label>
+              <div class="col-sm-10">
+                <ui-select ng-model="entry.country_code" theme="bootstrap">
+                  <ui-select-match placeholder="Select affected country">{{$select.selected.name}} &lt;{{$select.selected.code}}&gt;</ui-select-match>
+                  <ui-select-choices repeat="country.code as country in countries | filter: {name: $select.search}">
+                    <div ng-bind-html="country.name | highlight: $select.search"></div>
+                    <small>
+                      {{country.code}}
+                    </small>
+                  </ui-select-choices>
+                </ui-select>
+              </div>
+          </div>
+
+          <div class="form-group">
+              <label class="col-sm-2 control-label">Locations (Geonames)</label>
+              <div class="col-sm-10">
+                <ui-select multiple ng-model="entry.src_locations[CONST.LOCATION_SOURCE_GEONAME]" theme="bootstrap" ng-disabled="disabled">
+                  <ui-select-match placeholder="Select locations">{{$item.asciiname}}</ui-select-match>
+                  <ui-select-choices refresh="actions.getGeoname(entry.country_code, $select.search)" repeat="{location_id: location.location_id, source: CONST.LOCATION_SOURCE_GEONAME, asciiname: location.asciiname} as location in geonameLocations | filter: {name: $select.search}">
+                    <div ng-bind-html="location.asciiname | highlight: $select.search"></div>
+                    <small>
+                      {{location.code}}
+                    </small>
+                  </ui-select-choices>
+                </ui-select>
+              </div>
+          </div>
+
+          <div class="form-group">
+              <label class="col-sm-2 control-label">Locations (Administrative)</label>
+              <div class="col-sm-10">
+                <ui-select multiple ng-model="entry.src_locations[CONST.LOCATION_SOURCE_SELF]" theme="bootstrap" ng-disabled="disabled">
+                  <ui-select-match placeholder="Select locations">{{$item.asciiname}}</ui-select-match>
+                  <ui-select-choices refresh="actions.getLocation(entry.country_code, $select.search)" repeat="{location_id: location.location_id, source: CONST.LOCATION_SOURCE_SELF, asciiname: location.name} as location in selfLocations | filter: {name: $select.search}">
+                    <div ng-bind-html="location.asciiname | highlight: $select.search"></div>
+                    <small>
+                      {{location.code}}
+                    </small>
+                  </ui-select-choices>
+                </ui-select>
+              </div>
+          </div>
+
+          <div class="form-group">
+              <label class="col-sm-2 control-label">Locations (Google maps drawing)</label>
+              <div class="col-sm-10">
+                <div id="map_canvas">
+                  <div class="box">
+                    <div class="box-body chart">
+                        <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="mapOptions" bounds="map.bounds">
+                            <ui-gmap-drawing-manager options="drawingManagerOptions" control="map.drawingManagerControl"></ui-gmap-drawing-manager>
+                        </ui-gmap-google-map>
+                        <a ng-show="shapeSelected" href="#" class="btn btn-danger" ng-click="deleteSelectedShape()">Delete Selected Area</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+
+          <div class="form-group" ng-repeat="tagGroup in tagGroups">
+              <label class="col-sm-2 control-label">{{tagGroup.title}}</label>
+              <div class="col-sm-10">
+                <ui-select multiple ng-model="entry.tags[tagGroup.name]" theme="bootstrap">
+                  <ui-select-match>{{$item.title}}</ui-select-match>
+                  <ui-select-choices repeat="tag.id as tag in tagGroup.tags | filter: {title: $select.search}">
+                    <div ng-bind-html="tag.title | highlight: $select.search"></div>
+                    <small ng-show="tag.tree.length > 0">
+                      (<span ng-repeat="ptag in tag.tree">{{ptag.title}} </span>)
+                    </small>
+                  </ui-select-choices>
+                </ui-select>
+              </div>
+          </div>
+
+          <div class="form-group">
+              <label class="col-sm-2 control-label">Status</label>
+              <div class="col-sm-10">
+                <ui-select ng-model="entry.status_ord" theme="bootstrap">
+                  <ui-select-match placeholder="Select status">{{$select.selected.title}}</ui-select-match>
+                  <ui-select-choices repeat="status.id as status in statusLevels | filter: {title: $select.search}">
+                    <span ng-bind-html="status.title | highlight: $select.search"></span>
+                  </ui-select-choices>
+                </ui-select>
+              </div>
+          </div>
+
+          <div class="form-group">
+              <label class="col-sm-2 control-label">Problem Timeline</label>
+              <div class="col-sm-10">
+                <ui-select ng-model="entry.timeline" theme="bootstrap">
+                  <ui-select-match placeholder="Select problem timeline">{{$select.selected.title}}</ui-select-match>
+                  <ui-select-choices repeat="timeline.id as timeline in timelineLevels | filter: {title: $select.search}">
+                    <span ng-bind-html="timeline.title | highlight: $select.search"></span>
+                  </ui-select-choices>
+                </ui-select>
+              </div>
+          </div>
+
+          <div class="form-group">
+              <label class="col-sm-2 control-label">Severity</label>
+              <div class="col-sm-10">
+                <ui-select ng-model="entry.severity" theme="bootstrap">
+                  <ui-select-match placeholder="Select severity level">{{$select.selected.id}}: {{$select.selected.title}}</ui-select-match>
+                  <ui-select-choices repeat="severity.id as severity in severityLevels | filter: {title: $select.search}">
+                    <b>{{severity.id}}</b> <span ng-bind-html="severity.title | highlight: $select.search"></span>
+                  </ui-select-choices>
+                </ui-select>
+              </div>
+          </div>
+
+          <div class="form-group">
+              <label class="col-sm-2 control-label">Reliability</label>
+              <div class="col-sm-10">
+                <ui-select ng-model="entry.reliability" theme="bootstrap">
+                  <ui-select-match placeholder="Select reliability level">{{$select.selected.id}}: {{$select.selected.title}}</ui-select-match>
+                  <ui-select-choices repeat="reliability.id as reliability in reliabilityLevels | filter: {title: $select.search}">
+                    <b>{{reliability.id}}</b> <span ng-bind-html="reliability.title | highlight: $select.search"></span>
+                  </ui-select-choices>
+                </ui-select>
+              </div>
+          </div>
+
+        </div>
+        <div class="box-footer pull-right">
+          <button class="btn btn-info " ng-click="actions.submit(entryForm, entry, 'return')">Save</button>
+          <button class="btn btn-success" ng-click="actions.submit(entryForm, entry, 'next')">Save and Add another</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
