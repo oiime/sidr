@@ -59,7 +59,6 @@ class Bytes(Type):
 
 
 class Tag(Integer):
-
     def __init__(self, tag_class=None):
         super(Integer, self).__init__()
         self.tag_class = tag_class
@@ -74,6 +73,24 @@ class Tag(Integer):
             raise ValidationError("Tag of wrong class %s" % self.tag_class, value)
 
         return value
+
+
+class TagBlock(Object):
+    def __init__(self, tag_class=None):
+        self.tag_class = tag_class
+
+    def validate(self, value, adapt=True):
+        from sidr import models
+        if not isinstance(value, dict) or 'id' not in value:
+            raise ValidationError("Broken tag block format", repr(value))
+        tag = models.Tag.get(value['id'])
+        if tag is None:
+            raise ValidationError("Tag not found", value)
+        if self.tag_class is not None and tag.tag_class != self.tag_class:
+            raise ValidationError("Tag of wrong class %s" % self.tag_class, value)
+
+        return value
+
 
 class Email(Pattern):
     name = "email"

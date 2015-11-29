@@ -70,7 +70,11 @@
                 <div id="map_canvas">
                   <div class="box">
                     <div class="box-body chart">
+                        <script type="text/ng-template" id="searchbox.tpl.html">
+                            <input type="text" placeholder="Search Location" style="margin:1em;">
+                        </script>
                         <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="mapOptions" bounds="map.bounds">
+                            <ui-gmap-search-box template="mapsearchbox.template" events="mapsearchbox.events"></ui-gmap-search-box>
                             <ui-gmap-drawing-manager options="drawingManagerOptions" control="map.drawingManagerControl"></ui-gmap-drawing-manager>
                         </ui-gmap-google-map>
                         <a ng-show="shapeSelected" href="#" class="btn btn-danger" ng-click="deleteSelectedShape()">Delete Selected Area</a>
@@ -82,7 +86,32 @@
 
           <div class="form-group" ng-repeat="tagGroup in tagGroups">
               <label class="col-sm-2 control-label">{{tagGroup.title}}</label>
-              <div class="col-sm-10">
+              <div class="col-sm-10" ng-if="tagGroup.parameters">
+                <ul class="list-group">
+                  <li class="list-group-item">
+                    <div class="row" ng-repeat="tag in entry.tags[tagGroup.name]">
+                      <div class="col-sm-5">
+                        <ui-select ng-model="tag.id" theme="bootstrap" on-select="actions.tagChange(tagGroup.name, $item, $model)">
+                          <ui-select-match>{{$select.selected.title}}</ui-select-match>
+                          <ui-select-choices repeat="tag.id as tag in tagGroup.tags | filter: {title: $select.search}">
+                            <div ng-bind-html="tag.title | highlight: $select.search"></div>
+                            <small ng-show="tag.tree.length > 0">
+                              (<span ng-repeat="ptag in tag.tree">{{ptag.title}} </span>)
+                            </small>
+                          </ui-select-choices>
+                        </ui-select>
+                      </div>
+                      <div class="col-sm-6" ng-repeat="(name, opt) in tagGroup.parameters">
+                          <input ng-model="tag[name]" type="text" placeholder="{{opt.description}}" class="form-control">
+                      </div>
+                      <div class="col-sm-1">
+                        <button class="btn btn-danger btn-circle" type="button" ng-click="actions.removeTag(tagGroup.name, entry.tags[tagGroup.name], $index)" tooltip="Delete"><i class="fa fa-minus"></i></button>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <div class="col-sm-10" ng-if="!tagGroup.parameters">
                 <ui-select multiple ng-model="entry.tags[tagGroup.name]" theme="bootstrap">
                   <ui-select-match>{{$item.title}}</ui-select-match>
                   <ui-select-choices repeat="tag.id as tag in tagGroup.tags | filter: {title: $select.search}">

@@ -37,6 +37,13 @@ angular.module('sidrApp')
     this.getClassStructure = function(tag_class){
       return self.tagClassesMap[tag_class].metadata.structure;
     };
+    this.getClassParamters = function(tag_class){
+      if(typeof self.tagClassesMap[tag_class].metadata.parameters !== 'undefined'){
+        return self.tagClassesMap[tag_class].metadata.parameters;
+      } else {
+        return undefined;
+      }
+    };
 
 })
 .service('TagService', function($q, APIService, ObjectsService, Tag){

@@ -137,6 +137,7 @@ class LeadQuery(Query):
         'name': QueryFilterLike(Lead.name),
         'lead_type': QueryFilterEq(Lead.lead_type),
         'source_id': QueryFilterEq(Lead.source_id),
+        'domain_id': QueryFilterEq(Lead.domain_id),
         'status': QueryFilterEq(Lead.status),
         'website': QueryFilterLike(Lead.website),
         'created_at': QueryFilterEqDate(Lead.created_at),

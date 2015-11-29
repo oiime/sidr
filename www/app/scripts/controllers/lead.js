@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('sidrApp')
-.controller('LeadsCtrl', function ($scope, $rootScope, $state, LeadService, LocationService, TagService, ngTableParams, CONST) {
+.controller('LeadsCtrl', function ($scope, $rootScope, $state, LeadService, SessionService, LocationService, TagService, ngTableParams, CONST) {
   $rootScope.$broadcast("updatePage", {
       pageCaption: 'Leads',
       pageSubCaption:  ''
@@ -21,7 +21,8 @@ angular.module('sidrApp')
       page: 1,
       count: 50,
       filter: {
-        status: CONST.STATUS_PENDING
+        status: CONST.STATUS_PENDING,
+        domain_id: SessionService.user.state.focus_domain_id
       }
   }, {
       total: 0,

@@ -57,7 +57,7 @@ angular.module('sidrApp')
       return rsp;
     }
 })
-.factory('Entry', function(ObjectService, CONST, md5){
+.factory('Entry', function(ObjectService, TagClassService, CONST, md5){
   return function(data) {
       var self = this;
       this.columns = {
@@ -78,7 +78,7 @@ angular.module('sidrApp')
       angular.extend(this, data);
 
       this.postprocessExport = function(obj){
-        var locations = [];
+        var locations = [], tags = {};
         angular.forEach([CONST.LOCATION_SOURCE_GEONAME, CONST.LOCATION_SOURCE_SELF, CONST.LOCATION_SOURCE_GOOGLE_MAP_SHAPE], function(source){
           angular.forEach(self.src_locations[source], function(location){
             if(typeof location.toLocationExport === 'function'){
@@ -89,8 +89,21 @@ angular.module('sidrApp')
           })
         })
         obj.locations = locations;
+        angular.forEach(obj.tags, function(ctags, tag_class){
+          tags[tag_class] = [];
+          angular.forEach(ctags, function(tag){
+            if(typeof tag === 'object' && typeof tag.id === 'undefined'){
+              // meh
+            } else {
+              tags[tag_class].push(tag);
+            }
+          });
+        });
+        obj.tags = tags;
         return obj;
       }
+
+      // import in
       this.src_locations = {}
       this.src_locations[CONST.LOCATION_SOURCE_GOOGLE_MAP_SHAPE] = [];
       this.src_locations[CONST.LOCATION_SOURCE_GEONAME] = [];
@@ -99,5 +112,18 @@ angular.module('sidrApp')
       angular.forEach(this.locations, function(location){
         self.src_locations[location.source].push(location);
       })
+
+      // yet another ugly hack to fit in the "parameters" for tags
+      if(typeof this.tags !== 'undefined'){
+        angular.forEach(this.tags, function(tags, tag_class){
+          var ntags = [];
+          if(typeof TagClassService.getClassParamters(tag_class) === 'undefined'){
+            angular.forEach(tags, function(tag){
+              ntags.push(tag.id);
+            })
+            self.tags[tag_class] = ntags;
+          }
+        })
+      }
   };
 });

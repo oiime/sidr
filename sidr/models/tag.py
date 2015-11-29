@@ -50,6 +50,8 @@ class TagClass():
     def jsonify_metadata(self):
         rsp = {}
         rsp['structure'] = self.__structure__
+        if hasattr(self, '__parameters__'):
+            rsp['parameters'] = self.__parameters__
         rsp['title'] = self.__title__
         return rsp
 
@@ -81,11 +83,27 @@ class TagClassSector(TagClass):
 class TagClassAffected(TagClass):
     __title__ = 'Affected Group'
     __structure__ = copy.deepcopy(TagClass.__structure__)
+    __parameters__ = {
+        'cases': {
+            'title': 'Cases',
+            'display': 'text',
+            'description': 'Enter number of known cases, leave empty if unknown',
+            'edit': 'text'
+        }
+    }
 
 
 class TagClassVulnerable(TagClass):
     __title__ = 'Vulnerable Group'
     __structure__ = copy.deepcopy(TagClass.__structure__)
+    __parameters__ = {
+        'cases': {
+            'title': 'Cases',
+            'display': 'text',
+            'description': 'Enter number of known cases, leave empty if unknown',
+            'edit': 'text'
+        }
+    }
 
 
 class TagClassUnderlying(TagClass):

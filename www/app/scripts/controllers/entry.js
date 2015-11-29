@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('sidrApp')
-.controller('EntriesCtrl', function ($scope, $rootScope, $state, EntryService, LocationService, TagService, TagClassService, ngTableParams, CONST) {
+.controller('EntriesCtrl', function ($scope, $rootScope, $state, EntryService, SessionService, LocationService, TagService, TagClassService, ngTableParams, CONST) {
   $rootScope.$broadcast("updatePage", {
       pageCaption: 'Entries',
       pageSubCaption:  ''
@@ -30,7 +30,8 @@ angular.module('sidrApp')
       page: 1,
       count: 50,
       filter: {
-        status: CONST.STATUS_ACTIVE
+        status: CONST.STATUS_ACTIVE,
+        domain_id: SessionService.user.state.focus_domain_id
       }
   }, {
       total: 0,
@@ -66,10 +67,6 @@ angular.module('sidrApp')
   $scope.shapeSelected = false;
   $scope.tagGroups = [];
 
-  angular.forEach(['sector', 'vulnerable', 'affected', 'underlying'], function(tag_class){
-      $scope.tagGroups.push({name: tag_class, tags: TagService.getByClass(tag_class), title: TagClassService.getClassTitle(tag_class)})
-  });
-
   // holy shit this is terrible
   var hookDrawingManager = function(){
       var drawingManager;
@@ -83,7 +80,9 @@ angular.module('sidrApp')
       }
       function clearSelection() {
         if (selectedShape) {
-          selectedShape.setEditable(false);
+          if(typeof selectedShape.setEditable !== 'undefined'){
+            selectedShape.setEditable(false);
+          }
           selectedShape = null;
         }
         $scope.shapeSelected = false;
@@ -92,7 +91,9 @@ angular.module('sidrApp')
       function setSelection(shape) {
         clearSelection();
         selectedShape = shape;
-        shape.setEditable(true);
+        if(typeof shape.setEditable !== 'undefined'){
+          shape.setEditable(true);
+        }
         $scope.shapeSelected = true;
         $scope.$apply();
       }
@@ -114,6 +115,32 @@ angular.module('sidrApp')
           center: {latitude: 40.1451, longitude: 0.6680 },
           zoom: 2, bounds: {},
           drawingManagerControl: {}
+      };
+      $scope.mapsearchbox = {
+        template:'searchbox.tpl.html',
+        place: null,
+        events: {
+          places_changed: function(search){
+            var places = search.getPlaces(), place, bounds;
+            if (places.length == 0) {
+              return;
+            }
+            place = places[0];
+            bounds = new google.maps.LatLngBounds();
+            bounds.extend(place.geometry.location);
+            $scope.map.bounds = {
+              northeast: {
+                latitude: bounds.getNorthEast().lat(),
+                longitude: bounds.getNorthEast().lng()
+              },
+              southwest: {
+                latitude: bounds.getSouthWest().lat(),
+                longitude: bounds.getSouthWest().lng()
+              }
+            };
+            $scope.map.zoom = 10;
+          }
+        }
       };
       $scope.mapOptions = {scrollwheel: false};
       $scope.drawingManagerOptions = {
@@ -161,15 +188,13 @@ angular.module('sidrApp')
           addObject('point', e);
         });
         google.maps.event.addListener(drawingManager, 'overlaycomplete', function(e) {
-          if (e.type != google.maps.drawing.OverlayType.MARKER) {
-            drawingManager.setDrawingMode(null);
-            var newShape = e.overlay;
-            newShape.type = e.type;
-            google.maps.event.addListener(newShape, 'click', function() {
-              setSelection(newShape);
-            });
+          drawingManager.setDrawingMode(null);
+          var newShape = e.overlay;
+          newShape.type = e.type;
+          google.maps.event.addListener(newShape, 'click', function() {
             setSelection(newShape);
-          }
+          });
+          setSelection(newShape);
         });
         google.maps.event.addListener(drawingManager, 'drawingmode_changed', clearSelection);
         google.maps.event.addListener(map, 'click', clearSelection);
@@ -202,13 +227,13 @@ angular.module('sidrApp')
           }
           obj.id = idTokenizer;
           idTokenizer++;
+          obj.setMap(map);
           if(location.data.type !== 'point'){
-            obj.setMap(map);
             obj.setEditable(false);
-            google.maps.event.addListener(obj, 'click', function() {
-              setSelection(obj);
-            });
           }
+          google.maps.event.addListener(obj, 'click', function() {
+            setSelection(obj);
+          });
           var ol = LocationOverlay.create(location.data.type);
           ol.setObject(obj);
           $scope.entry.src_locations[CONST.LOCATION_SOURCE_GOOGLE_MAP_SHAPE][pos] = ol;
@@ -238,6 +263,27 @@ angular.module('sidrApp')
 
 
   $scope.actions = {
+    checkEmptyTag: function(tag_class){
+      var needsMoreRowz = true;
+      if(typeof $scope.entry.tags[tag_class] === 'undefined'){
+        $scope.entry.tags[tag_class] = [];
+      }
+      angular.forEach($scope.entry.tags[tag_class], function(o){
+        if(typeof o.id === 'undefined' || o.id < 1){
+          needsMoreRowz = false;
+        }
+      });
+      if(needsMoreRowz){
+        $scope.entry.tags[tag_class].push({});
+      }
+    },
+    tagChange: function(tag_class, item, model){
+      $scope.actions.checkEmptyTag(tag_class);
+    },
+    removeTag: function(tag_class, tags, idx){
+      tags.splice(idx, 1);
+      $scope.actions.checkEmptyTag(tag_class);
+    },
     submit: function(form, entry, next){
       $scope.serverErrors = [];
       EntryService.save($scope.entry).then(
@@ -271,4 +317,8 @@ angular.module('sidrApp')
       })
     }
   };
+  angular.forEach(['sector', 'vulnerable', 'affected', 'underlying'], function(tag_class){
+    $scope.tagGroups.push({name: tag_class, tags: TagService.getByClass(tag_class), parameters: TagClassService.getClassParamters(tag_class), title: TagClassService.getClassTitle(tag_class)});
+    $scope.actions.checkEmptyTag(tag_class);
+  });
 });

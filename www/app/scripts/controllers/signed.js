@@ -44,6 +44,9 @@ angular.module('sidrApp')
           $scope.currentUser.state = {};
         }
         $scope.currentUser.state.focus_domain_id = domain_id;
+        $state.transitionTo('signed.home').then(function(){
+          // meh
+        });
       })
     },
     updateOverview: function(){

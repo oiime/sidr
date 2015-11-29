@@ -42,8 +42,8 @@ class Entry(ObjectTable):
         "#country_code": validator.Enum([country.alpha2 for country in pycountry.countries]),
         "#tags": {
             '?sector': [validator.Tag(tag_class='sector')],
-            '?vulnerable': [validator.Tag(tag_class='vulnerable')],
-            '?affected': [validator.Tag(tag_class='affected')],
+            '?vulnerable': [validator.TagBlock(tag_class='vulnerable')],
+            '?affected': [validator.TagBlock(tag_class='affected')],
             '?underlying': [validator.Tag(tag_class='underlying')],
         },
         "#locations": [{
@@ -129,7 +129,15 @@ class Entry(ObjectTable):
             for tag in self.tags:
                 if tag.tag_class not in utags:
                     utags[tag.tag_class] = []
-                utags[tag.tag_class].append(tag.tag_id)
+
+                utag = {
+                    'id': tag.tag_id
+                }
+                if isinstance(tag.data, dict):
+                    utag.update(tag.data)
+
+                utags[tag.tag_class].append(utag)
+
             rsp['tags'] = utags
         if self.locations is not None:
             rsp['locations'] = []
@@ -166,6 +174,7 @@ class EntryQuery(Query):
         'user_id': QueryFilterEq(Entry.user_id),
         'tag_ids': QueryFilterTagIds(Entry.id),
         'lead_id': QueryFilterEq(Entry.lead_id),
+        'domain_id': QueryFilterEq(Entry.domain_id),
         'country_code': QueryFilterEq(Entry.country_code),
         'status': QueryFilterEq(Entry.status),
         'severity': QueryFilterEq(Entry.severity),
