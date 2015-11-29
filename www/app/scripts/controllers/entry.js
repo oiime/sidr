@@ -40,6 +40,7 @@ angular.module('sidrApp')
             params.total(data.total);
             $scope.exportUrls = {
               csv: EntryService.getExportUrl('csv', $scope.tableParams.filter),
+              csv_permutated: EntryService.getExportUrl('csv_permutated', $scope.tableParams.filter),
               json: EntryService.getExportUrl('json', $scope.tableParams.filter)
             }
             $defer.resolve(data.result);

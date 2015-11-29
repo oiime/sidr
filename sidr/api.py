@@ -80,7 +80,7 @@ class AdaptedApi(restful.Api):
 
 class Resource(restful.Resource):
     def respond(self, obj, http_code=200, rtype='json'):
-        if rtype == 'csv':
+        if rtype in ['csv', 'csv_permutated']:
             response = make_response(obj)
             response.headers["Content-Disposition"] = "attachment; filename=export.csv"
             response.headers["Content-type"] = "text/csv"

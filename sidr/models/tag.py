@@ -212,6 +212,14 @@ class Tag(ObjectTable):
         parents.append(obj)
         return cls_.get_parenthood(obj.parent_id, parents=parents)
 
+    @classmethod
+    def get_id_map(cls_):
+        umap = {}
+        rows = cls_.find().all()
+        for row in rows:
+            umap[row.id] = row.name
+        return umap
+
     def jsonify(self, acl=None):
         return tag_class_dict[self.tag_class].jsonify_tag(self)
 

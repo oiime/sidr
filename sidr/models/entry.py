@@ -2,6 +2,7 @@ import csv
 import io
 import copy
 import pycountry
+from itertools import product
 from sidr import validator, const
 from sidr.orm import db, sa_utils
 from sqlalchemy.orm import relationship, backref
@@ -197,19 +198,78 @@ class EntryQuery(Query):
     def filter_tag_id(self, value):
         self.q.filter(self.__model__.tags.has(tag_id=value))
 
+    def get_csv_tag_block(self, tag_class, row):
+        opts = []
+        if tag_class in row['tags']:
+            opts = [self.tag_map[tag['id']] for tag in row['tags'][tag_class]]
+            return ','.join(opts)
+        else:
+            return ''
+
+    def get_csv_row(self, row):
+        if not hasattr(self, 'tag_map'):
+            from .tag import Tag
+            self.tag_map = Tag.get_id_map()
+
+        return [
+            row['user']['id'] if 'user' in row else '',
+            row['user']['name'] if 'user' in row else '',
+            row['lead_id'],
+            row['status'],
+            self.get_csv_tag_block('sector', row),
+            self.get_csv_tag_block('vulnerable', row),
+            self.get_csv_tag_block('affected', row),
+            self.get_csv_tag_block('underlying', row),
+            row['created_at']
+        ]
+
+    def postprocess_response_csv(self, res):
+        output = io.StringIO()
+        writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
+        writer.writerow(['user_id', 'user_name', 'lead_id', 'status', 'sector', 'vulnerable', 'affected', 'underlying', 'created_at'])
+        for row in res['result']:
+            writer.writerow(self.get_csv_row(row))
+        return output.getvalue()
+
+    def extract_tag_permutations(self, row):
+        opts = []
+        rows = []
+        for tag_class, tags in row['tags'].items():
+            opt_group = []
+            for tag in tags:
+                opt_group.append((tag_class, tag))
+            if len(opt_group) > 0:
+                opts.append(opt_group)
+
+        for selection in product(*opts):
+            row = copy.deepcopy(row)
+            row['tags'] = {}
+            for utag in selection:
+                tag_class, tag = utag
+                if tag_class not in row['tags']:
+                    row['tags'][tag_class] = []
+                row['tags'][tag_class].append(tag)
+            rows.append(row)
+        return rows
+
+    def postprocess_response_csv_permutated(self, res):
+        output = io.StringIO()
+        writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
+        writer.writerow(['user_id', 'user_name', 'lead_id', 'status', 'sector', 'vulnerable', 'affected', 'underlying', 'created_at'])
+        rows = []
+        for row in res['result']:
+            rows.extend(self.extract_tag_permutations(row))
+
+        for row in rows:
+            writer.writerow(self.get_csv_row(row))
+
+        return output.getvalue()
+
     def postprocess_response(self, res):
+        if self.rtype == 'csv_permutated':
+            return self.postprocess_response_csv_permutated(res)
+
         if self.rtype == 'csv':
-            output = io.StringIO()
-            writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
-            writer.writerow(['user_id', 'user_name', 'lead_id', 'status', 'created_at'])
-            for row in res['result']:
-                writer.writerow([
-                    row['user']['id'] if 'user' in row else '',
-                    row['user']['name'] if 'user' in row else '',
-                    row['lead_id'],
-                    row['status'],
-                    row['created_at']
-                ])
-            return output.getvalue()
+            return self.postprocess_response_csv(res)
         else:
             return res
