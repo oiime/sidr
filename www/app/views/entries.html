@@ -10,6 +10,18 @@
   </ui-select>
 </script>
 
+<script type="text/ng-template" id="mapview.html">
+    <div class="modal-body">
+        <div id="map_canvas" ng-if="ready">
+            <ui-gmap-google-map center="map.center" zoom="map.zoom" options="mapOptions">
+            </ui-gmap-google-map>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="ok()">Close</button>
+    </div>
+</script>
+
 <div class="row">
   <div class="col-md-12">
     <div class="pull-right">
@@ -55,15 +67,11 @@
               </td>
               <td data-title="'Locations'" filter="{ 'locations': 'selector' }", filter-data="locations" style="min-width:100px;">
                   <b>{{entry.country_code}}</b>
-                  <span ng-repeat="location in entry.locations">
-                    <span ng-show="location.source == CONST.LOCATION_SOURCE_GOOGLE_MAP_SHAPE">
-                      <a href="#">[MAP]</a>
-                    </span>
-                    <span ng-show="location.source != CONST.LOCATION_SOURCE_GOOGLE_MAP_SHAPE">
-                      {{location.asciiname}}
-                    </span>
+                  <span ng-repeat="location in entry.locations" ng-if="location.source != CONST.LOCATION_SOURCE_GOOGLE_MAP_SHAPE">
+                    {{location.asciiname}}
                     {{$last ? '' : ', '}}
                   </span>
+                  <a href="#" class="color-info btn-circle" type="button" ng-click="actions.openMap(entry)" tooltip="Show Map"><i class="fa fa-globe"></i></a>
               </td>
               <td data-title="'Severity'" filter="{ 'severity': 'selector' }", filter-data="severityLevels" ng-class="{'bg-danger': entry.severity>3}">
                   <b>{{entry.severity}}</b> {{severityTitles[entry.severity]}}

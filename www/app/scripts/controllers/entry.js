@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('sidrApp')
-.controller('EntriesCtrl', function ($scope, $rootScope, $state, EntryService, SessionService, LocationService, TagService, TagClassService, ngTableParams, CONST) {
+.controller('EntriesCtrl', function ($scope, $rootScope, $uibModal, $state, EntryService, SessionService, LocationService, TagService, TagClassService, ngTableParams, CONST) {
   $rootScope.$broadcast("updatePage", {
       pageCaption: 'Entries',
       pageSubCaption:  ''
@@ -53,8 +53,94 @@ angular.module('sidrApp')
       EntryService.updateStatus(entry.id, status).then(function(rsp){
         entry.status = rsp.status;
       })
+    },
+    openMap: function (entry) {
+      var modalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: 'mapview.html',
+        controller: 'MapViewCtrl',
+        size: 'lg',
+        resolve: {
+          entry: function () {
+            return entry;
+          }
+        }
+      });
     }
   }
+})
+.controller('MapViewCtrl', function ($scope, $uibModalInstance, $timeout, uiGmapIsReady, CONST, entry) {
+  $scope.ready = false;
+  $scope.entry = entry;
+  $scope.objects = {
+    'markers': [],
+    'polygons': [],
+    'circles': []
+  };
+  $scope.ready = false;
+  $timeout(function() {
+      $scope.ready = true; // :(
+  }, 500);
+
+  var shapeOptions = {
+    fillColor: '#5555ff',
+    fillOpacity: 0.2,
+    strokeWeight: 0.5
+  }
+  // setup
+  $scope.mapElms = [];
+  $scope.map = {
+      center: {latitude: 40.1451, longitude: 0.6680 },
+      zoom: 2, bounds: {}
+  };
+
+  $scope.mapOptions = {scrollwheel: true};
+  $scope.ok = function () {
+    angular.forEach($scope.mapElms, function(obj){
+      obj.setMap();
+    })
+    $scope.$destroy();
+    $uibModalInstance.close();
+  };
+
+  uiGmapIsReady.promise(1).then(function(instances) {
+    instances.forEach(function(inst) {
+      var map = inst.map;
+      angular.forEach($scope.entry.locations, function(location, pos){
+        if(location.source == CONST.LOCATION_SOURCE_GOOGLE_MAP_SHAPE){
+          var obj;
+
+          switch(location.data.type){
+            case 'circle':
+              obj = new google.maps.Circle(angular.extend({
+                  center: {lat: location.data.coordinates[0], lng: location.data.coordinates[1] , id: location.id},
+                  radius: location.data.radius
+                }, shapeOptions));
+               break;
+             case 'point':
+               obj = new google.maps.Marker({
+                 position: {lat: location.data.coordinates[0], lng: location.data.coordinates[1] , id: location.id },
+               });
+               break;
+             case 'polygon':
+               var paths = [];
+               angular.forEach(location.data.coordinates, function(coordinates){
+                 paths.push({lat: coordinates[0], lng: coordinates[1]});
+               });
+               obj = new google.maps.Polygon(angular.extend({
+                   id: location.id,
+                   paths: paths
+                 }, shapeOptions));
+                break;
+          }
+          if(typeof obj !== 'undefined'){
+            obj.setMap(map);
+            $scope.mapElms.push(obj);
+          }
+        }
+      });
+    });
+  });
 })
 .controller('EntryCtrl', function ($scope, $rootScope, $state, $stateParams, $sce, uiGmapIsReady, CONST, entry, Entry, EntryService, APIService, TagService, TagClassService, LocationService, LocationOverlay, DomainService, LeadService, SessionService) {
   if($stateParams.hasOwnProperty('overlay') && typeof $stateParams.overlay !== 'undefined'){
@@ -148,7 +234,7 @@ angular.module('sidrApp')
           }
         }
       };
-      $scope.mapOptions = {scrollwheel: false};
+      $scope.mapOptions = {scrollwheel: true};
       $scope.drawingManagerOptions = {
        drawingMode: google.maps.drawing.OverlayType.MARKER,
        drawingControl: true,
