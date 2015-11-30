@@ -31,7 +31,11 @@
                   <a ui-sref="signed.user({user_id: entry.user_id})">{{entry.user.name}}</a>
               </td>
               <td data-title="'Lead'" sortable="'lead_id'">
+                  {{entry.lead.published_at | amDateFormat:'DD/MM/YYYY'}}
                   <a ng-if="entry.lead.website" href="{{entry.lead.url}}">{{entry.lead.website}}</a>
+                  <p ng-if="entry.lead.binbags" ng-repeat="binbag in entry.lead.binbags">
+                    <a target="_self" href="{{ENV.apiEndpoint}}/binbag/{{binbag.id}}/content?reference={{binbag.reference}}&auth={{ENV.Authorization}}" download="{{binbag.name}}">{{ binbag.name }}</a>
+                  </p>
               </td>
               <td data-title="'Information'" filter="{ 'information_at': 'daterangepicker' }" sortable="'information_at'">
                   {{entry.information_at | amDateFormat:'DD/MM/YYYY'}}

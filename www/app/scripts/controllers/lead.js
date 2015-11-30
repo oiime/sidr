@@ -64,10 +64,10 @@ angular.module('sidrApp')
 
   uploader.onSuccessItem = function(fileItem, response, status, headers) {
       console.info('onSuccessItem', fileItem, response, status, headers);
-      console.log(response);
-      if(typeof $scope.lead.binbags === 'undefined'){
+      if(typeof $scope.lead.binbags === 'undefined' || $scope.lead.binbags === null){
         $scope.lead.binbags = [];
       }
+      console.log($scope.lead.binbags);
       $scope.lead.binbags.push(response);
       fileItem.remove();
   };

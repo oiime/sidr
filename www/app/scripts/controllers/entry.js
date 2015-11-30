@@ -56,7 +56,7 @@ angular.module('sidrApp')
     }
   }
 })
-.controller('EntryCtrl', function ($scope, $rootScope, $state, uiGmapIsReady, CONST, entry, Entry, EntryService, APIService, TagService, TagClassService, LocationService, LocationOverlay, DomainService, SessionService) {
+.controller('EntryCtrl', function ($scope, $rootScope, $state, $sce, uiGmapIsReady, CONST, entry, Entry, EntryService, APIService, TagService, TagClassService, LocationService, LocationOverlay, DomainService, LeadService, SessionService) {
   $scope.entry = entry;
   $scope.countries = LocationService.getCountries(DomainService.getDomainCountries(SessionService.user.state.focus_domain_id));
   if(typeof $scope.entry.country_code === 'undefined'){
@@ -67,6 +67,7 @@ angular.module('sidrApp')
   $scope.selfLocations = [];
   $scope.shapeSelected = false;
   $scope.tagGroups = [];
+  $scope.lead = null;
 
   // holy shit this is terrible
   var hookDrawingManager = function(){
@@ -266,6 +267,9 @@ angular.module('sidrApp')
   $scope.actions = {
     checkEmptyTag: function(tag_class){
       var needsMoreRowz = true;
+      if(typeof $scope.entry.tags === 'undefined'){
+        $scope.entry.tags = {};
+      }
       if(typeof $scope.entry.tags[tag_class] === 'undefined'){
         $scope.entry.tags[tag_class] = [];
       }
@@ -318,8 +322,16 @@ angular.module('sidrApp')
       })
     }
   };
+  // load tag group data
   angular.forEach(['sector', 'vulnerable', 'affected', 'underlying'], function(tag_class){
     $scope.tagGroups.push({name: tag_class, tags: TagService.getByClass(tag_class), parameters: TagClassService.getClassParamters(tag_class), title: TagClassService.getClassTitle(tag_class)});
     $scope.actions.checkEmptyTag(tag_class);
   });
+  // load Lead
+  LeadService.get($scope.entry.lead_id).then(function(lead){
+    $scope.lead = lead;
+    if(lead.url.length > 0){
+      $scope.leadUrl = $sce.trustAsResourceUrl($scope.lead.url);
+    }
+  })
 });
