@@ -60,6 +60,7 @@ angular.module('sidrApp')
 .factory('Entry', function(ObjectService, TagClassService, CONST, md5){
   return function(data) {
       var self = this;
+      this.orig = angular.copy(data);
       this.columns = {
           'name': null,
           'lead_id': null,

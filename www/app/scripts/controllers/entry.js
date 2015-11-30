@@ -56,8 +56,12 @@ angular.module('sidrApp')
     }
   }
 })
-.controller('EntryCtrl', function ($scope, $rootScope, $state, $sce, uiGmapIsReady, CONST, entry, Entry, EntryService, APIService, TagService, TagClassService, LocationService, LocationOverlay, DomainService, LeadService, SessionService) {
-  $scope.entry = entry;
+.controller('EntryCtrl', function ($scope, $rootScope, $state, $stateParams, $sce, uiGmapIsReady, CONST, entry, Entry, EntryService, APIService, TagService, TagClassService, LocationService, LocationOverlay, DomainService, LeadService, SessionService) {
+  if($stateParams.hasOwnProperty('overlay') && typeof $stateParams.overlay !== 'undefined'){
+    $scope.entry = new Entry(angular.fromJson($stateParams.overlay));
+  } else {
+    $scope.entry = entry;
+  }
   $scope.countries = LocationService.getCountries(DomainService.getDomainCountries(SessionService.user.state.focus_domain_id));
   if(typeof $scope.entry.country_code === 'undefined'){
     $scope.entry.country_code = $scope.countries[0].code;
@@ -293,15 +297,25 @@ angular.module('sidrApp')
       $scope.serverErrors = [];
       EntryService.save($scope.entry).then(
           function(rsp){
-            $scope.entry = new Entry(rsp);
             if(next == 'return'){
               $state.transitionTo('signed.entries').then(function(){
                 // notification or something
               });
             }
+            else if (next == 'next_similar') {
+              var overlay = {
+                lead_id: rsp.lead_id,
+                locations: rsp.locations,
+                excerpt: rsp.excerpt,
+                information_at: rsp.information_at
+              };
+              $state.transitionTo('signed.entry', {lead_id: rsp.lead_id, overlay: angular.toJson(overlay)}).then(function(){
+
+              });
+            }
             else{
               $state.transitionTo('signed.entry', {'lead_id': rsp.lead_id}).then(function(){
-                $scope.entry = new Entry({lead_id: rsp.lead_id});
+
               });
             }
           },
@@ -325,12 +339,14 @@ angular.module('sidrApp')
   // load tag group data
   angular.forEach(['sector', 'vulnerable', 'affected', 'underlying'], function(tag_class){
     $scope.tagGroups.push({name: tag_class, tags: TagService.getByClass(tag_class), parameters: TagClassService.getClassParamters(tag_class), title: TagClassService.getClassTitle(tag_class)});
-    $scope.actions.checkEmptyTag(tag_class);
+    if(typeof TagClassService.getClassParamters(tag_class) !== 'undefined'){
+      $scope.actions.checkEmptyTag(tag_class);
+    }
   });
   // load Lead
   LeadService.get($scope.entry.lead_id).then(function(lead){
     $scope.lead = lead;
-    if(lead.url.length > 0){
+    if(typeof lead.url !== 'undefined' && lead.url !== null && lead.url.length > 0){
       $scope.leadUrl = $sce.trustAsResourceUrl($scope.lead.url);
     }
   })

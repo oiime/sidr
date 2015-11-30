@@ -186,7 +186,7 @@ angular
         }
       })
       .state('signed.entry', {
-        url: "/entry/{id}?lead_id",
+        url: "/entry/{id}?lead_id&overlay",
         templateUrl: "views/entry.html",
         controller: 'EntryCtrl',
         data: {

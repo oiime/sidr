@@ -93,7 +93,7 @@ class Entry(ObjectTable):
             models.EntryTag.update_tags(entry, data['tags'])
 
         models.Action.mark(current_user, action_type, entry.jsonify(acl=const.ACL_READ), domain_id=entry.domain_id)
-        return entry.jsonify(acl=const.ACL_READ)
+        return entry.jsonify_complete(acl=const.ACL_READ)
 
     @classmethod
     def af_find(cls_, current_user, data, rtype='json'):
