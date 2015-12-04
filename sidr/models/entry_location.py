@@ -51,7 +51,7 @@ class EntryLocation(BaseTable):
 
     @classmethod
     def get_overview(cls_, current_user, domain_id):
-        sql = 'SELECT location_id, source, entry_id, entry.severity, entry_location.asciiname, geoname.latitude, geoname.longitude FROM entry_location'
+        sql = 'SELECT location_id, data, source, entry_id, entry.severity, entry_location.asciiname, geoname.latitude, geoname.longitude FROM entry_location'
         sql += ' INNER JOIN entry ON (entry.id=entry_location.entry_id)'
         sql += ' LEFT JOIN geoname ON (geoname.id=location_id AND source=%s)' % const.LOCATION_SOURCE_GEONAME
         sql += ' WHERE entry.status !=%s AND domain_id=%s' % (const.STATUS_DELETED, int(domain_id))
@@ -67,5 +67,6 @@ class EntryLocation(BaseTable):
                 'asciiname': row['asciiname'],
                 'latitude': row['latitude'],
                 'longitude': row['longitude'],
+                'data': json.loads(row['data']) if row['data'] is not None else None
             })
         return rsp

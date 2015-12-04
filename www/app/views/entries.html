@@ -82,7 +82,7 @@
               <td data-title="'Timeline'" filter="{ 'timeline': 'selector' }", filter-data="timelineLevels">
                   {{timelineTitles[entry.timeline]}}
               </td>
-              <td data-title="'Entry Status'" filter="{ 'status_ord': 'selector' }", filter-data="statusLevels">
+              <td data-title="'Group Status'" filter="{ 'status_ord': 'selector' }", filter-data="statusLevels">
                   {{statusTitles[entry.status_ord]}}
               </td>
               <td data-title="'Status'" filter="{ 'status': 'selector' }" sortable="'status'" filter-data="entryStatusDropdown" ng-class="signedActions.getStatusClass(entry.status)">

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('sidrApp')
-.controller('HomeCtrl', function ($scope, $rootScope, CONST, EntryService, APIService, SessionService) {
+.controller('HomeCtrl', function ($scope, $rootScope, CONST, EntryService, SessionService, locations, actions) {
   $rootScope.updateOverview();
   $scope.actionTitles = {};
   $scope.actionTitles[CONST.ACTION_TYPE_ADD_ENTRY] = 'Add entry';
@@ -12,22 +12,9 @@ angular.module('sidrApp')
   $scope.mapMarkers = [];
   $scope.actions = [];
 
-  APIService.post('/actions', {count: 10}).then(function(rsp){
-    $scope.actions = rsp.result;
-  })
-  if(SessionService.user.state !== null && typeof SessionService.user.state.focus_domain_id !== 'undefined'){
-    APIService.get('/overview/locations/' + SessionService.user.state.focus_domain_id).then(function(res){
-      $scope.mapMarkers = [];
-      angular.forEach(res.locations, function(location){
-        $scope.mapMarkers.push({
-          latitude: location.latitude,
-          longitude: location.longitude,
-          title: location.asciiname,
-          id: location.location_id
-        })
-      });
-    })
-  }
+  $scope.actions = actions.result;
+  $scope.locations = locations.locations;
+
   $rootScope.$broadcast("updatePage", {
       hide: true
   });

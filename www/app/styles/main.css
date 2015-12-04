@@ -1,5 +1,3 @@
-.angular-google-map-container { height: 400px; }
-
 /* Helper class to show styles when focus */
 .btn-default-focus {
   color: #333;
@@ -144,4 +142,9 @@ body > .ui-select-bootstrap.open {
 /* Mark invalid Bootstrap */
 .ui-select-bootstrap.ng-dirty.ng-invalid > button.btn.ui-select-match {
     border-color: #D44950;
+}
+
+.angular-google-map-container {
+    height: 400px;
+    max-width:980px;
 }

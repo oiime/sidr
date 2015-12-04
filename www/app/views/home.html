@@ -49,10 +49,8 @@
             <p class="text-center">
               <strong>Events</strong>
             </p>
-            <div class="chart">
-              <ui-gmap-google-map center='map.center' zoom='map.zoom'>
-                <ui-gmap-markers models="mapMarkers" doCluster="true" coords="'self'" icon="'icon'">
-                </ui-gmap-markers>
+            <div class="chart" ng-controller="MapViewCtrl" ng-init="init(locations)">
+              <ui-gmap-google-map center="map.center" zoom="map.zoom" options="mapOptions">
               </ui-gmap-google-map>
             </div><!-- /.chart-responsive -->
           </div><!-- /.col -->

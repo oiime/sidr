@@ -99,7 +99,15 @@ angular
       .state('signed.home', {
         url: "/home",
         controller: 'HomeCtrl',
-        templateUrl: "views/home.html"
+        templateUrl: "views/home.html",
+        resolve: {
+          locations: function(APIService, SessionService){
+            return APIService.get('/overview/locations/' + SessionService.user.state.focus_domain_id);
+          },
+          actions: function(APIService){
+            return APIService.post('/actions', {count: 10});
+          }
+        }
       })
       // USER
       .state('signed.users', {
