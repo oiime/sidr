@@ -108,8 +108,8 @@ angular.module('sidrApp')
                 });
               }
               else{
-                $state.transitionTo('signed.lead', {'lead_type': rsp.lead_type}).then(function(){
-                  $scope.lead = new Lead({lead_type: rsp.lead_type});
+                $state.transitionTo('signed.lead', {'lead_type': rsp.lead_type}, {reload: true}).then(function(){
+                  
                 });
               }
             },

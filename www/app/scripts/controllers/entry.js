@@ -323,12 +323,12 @@ angular.module('sidrApp')
                 excerpt: rsp.excerpt,
                 information_at: rsp.information_at
               };
-              $state.transitionTo('signed.entry', {lead_id: rsp.lead_id, overlay: angular.toJson(overlay)}).then(function(){
+              $state.transitionTo('signed.entry', {lead_id: rsp.lead_id, overlay: angular.toJson(overlay)}, {reload: true}).then(function(){
 
               });
             }
             else{
-              $state.transitionTo('signed.entry', {'lead_id': rsp.lead_id}).then(function(){
+              $state.transitionTo('signed.entry', {'lead_id': rsp.lead_id}, {reload: true}).then(function(){
 
               });
             }

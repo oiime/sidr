@@ -148,3 +148,6 @@ body > .ui-select-bootstrap.open {
     height: 400px;
     max-width:980px;
 }
+.form-group .required:after {
+  content:"*";color:red;
+}

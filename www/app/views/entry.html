@@ -9,20 +9,26 @@
           <div class="form-group">
               <label class="col-sm-2 control-label">Lead</label>
               <div class="col-sm-10">
-                <p>Published At: {{lead.published_at | amDateFormat:'DD/MM/YYYY'}}</p>
-                <p ng-if="lead.binbags" ng-repeat="binbag in lead.binbags">
-                  <a target="_self" href="{{ENV.apiEndpoint}}/binbag/{{binbag.id}}/content?reference={{binbag.reference}}&auth={{ENV.Authorization}}" download="{{binbag.name}}">{{ binbag.name }}</a>
-                </p>
-                <div ng-show="lead.url">
-                  <a ng-if="lead.website" href="{{lead.url}}">{{lead.url}}</a>
-                  <a href="#" class="btn" ng-click="showUrl = !showUrl">[ Show Inline ]</a>
-                  <br/>
-                  <iframe ng-show="showUrl" ng-src="{{leadUrl}}" class="box" style="min-height:700px;"></iframe>
-                </div>
+                <div class="box">
+                <div class="box-body">
+                  <p ng-if="lead.published_at">Published At: {{lead.published_at | amDateFormat:'DD/MM/YYYY'}}</p>
+                  <p ng-if="!lead.published_at">Created At: {{lead.created_at | amDateFormat:'DD/MM/YYYY'}}</p>
+                  <p ng-if="lead.binbags" ng-repeat="binbag in lead.binbags">
+                    <a target="_self" href="{{ENV.apiEndpoint}}/binbag/{{binbag.id}}/content?reference={{binbag.reference}}&auth={{ENV.Authorization}}" download="{{binbag.name}}">{{ binbag.name }}</a>
+                  </p>
+
+                  <div ng-show="lead.url">
+                    <a ng-if="lead.url" href="{{lead.url}}">{{lead.url}}</a>
+                    <a href="#" class="btn" ng-click="showUrl = !showUrl">[ Show Website Inline ]</a>
+                    <br/>
+                    <iframe ng-show="showUrl" ng-src="{{leadUrl}}" class="box" style="min-height:700px;"></iframe>
+                  </div>
+                </div><!-- /.info-box-content -->
+              </div><!-- /.info-box -->
               </div>
           </div>
           <div class="form-group">
-              <label class="col-sm-2 control-label">Excerpt</label>
+              <label class="col-sm-2 control-label required">Excerpt</label>
               <div class="col-sm-10">
                 <textarea type="text" class="form-control" ng-model="entry.excerpt" rows="5"/></textarea>
               </div>
@@ -31,12 +37,12 @@
           <div class="form-group">
               <label class="col-sm-2 control-label">Information At</label>
               <div class="col-sm-10">
-                <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="entry.information_at" is-open="information_at_open" data-ng-click="information_at_open = true" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+                <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="entry.information_at" is-open="information_at_open" data-ng-click="information_at_open = true" min-date="minDate" max-date="maxDate" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" close-text="Close" />
               </div>
           </div>
 
           <div class="form-group">
-              <label class="col-sm-2 control-label">Country</label>
+              <label class="col-sm-2 control-label required">Country</label>
               <div class="col-sm-10">
                 <ui-select ng-model="entry.country_code" theme="bootstrap">
                   <ui-select-match placeholder="Select affected country">{{$select.selected.name}} &lt;{{$select.selected.code}}&gt;</ui-select-match>
@@ -141,7 +147,7 @@
           </div>
 
           <div class="form-group">
-              <label class="col-sm-2 control-label">Status</label>
+              <label class="col-sm-2 control-label required">Status</label>
               <div class="col-sm-10">
                 <ui-select ng-model="entry.status_ord" theme="bootstrap">
                   <ui-select-match placeholder="Select status">{{$select.selected.title}}</ui-select-match>
@@ -165,7 +171,7 @@
           </div>
 
           <div class="form-group">
-              <label class="col-sm-2 control-label">Severity</label>
+              <label class="col-sm-2 control-label required">Severity</label>
               <div class="col-sm-10">
                 <ui-select ng-model="entry.severity" theme="bootstrap">
                   <ui-select-match placeholder="Select severity level">{{$select.selected.id}}: {{$select.selected.title}}</ui-select-match>
@@ -177,7 +183,7 @@
           </div>
 
           <div class="form-group">
-              <label class="col-sm-2 control-label">Reliability</label>
+              <label class="col-sm-2 control-label required" required>Reliability</label>
               <div class="col-sm-10">
                 <ui-select ng-model="entry.reliability" theme="bootstrap">
                   <ui-select-match placeholder="Select reliability level">{{$select.selected.id}}: {{$select.selected.title}}</ui-select-match>
