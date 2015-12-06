@@ -59,7 +59,7 @@ angular.module('sidrApp')
 })
 .factory('Entry', function(ObjectService, TagClassService, CONST, md5){
   return function(data) {
-      var self = this;
+      var sanitizedData = {}, self = this;
       this.orig = angular.copy(data);
       this.columns = {
           'name': null,
@@ -76,7 +76,14 @@ angular.module('sidrApp')
           'information_at': null
       };
       angular.extend(this, ObjectService.overload(this))
-      angular.extend(this, data);
+
+      if(typeof data !== 'undefined'){
+        angular.forEach(data, function(value, key) {
+          if((value !== undefined && value !== null) || ['country_code'].indexOf(key) !== -1){
+            self[key] = value;
+          }
+        });
+      }
 
       this.postprocessExport = function(obj){
         var locations = [], tags = {};

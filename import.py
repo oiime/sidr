@@ -3,6 +3,7 @@
 from flask.ext.script import Manager, Command, Option
 from sidr import app
 
+
 class ImportOldHira(Command):
     "import old hira database"
 
@@ -13,7 +14,6 @@ class ImportOldHira(Command):
             Option('--restrict-countries', dest='restrict_countries', required=True),
             Option('--db', dest='db', required=True)
         ]
-
 
     def run(self, name, name_display, restrict_countries, db):
         import pymysql
@@ -30,7 +30,6 @@ class ImportOldHira(Command):
 
         user_map = self.import_users(domain, conn)
         self.import_leads(domain, conn, user_map)
-
 
     def import_users(self, domain, conn):
         from sidr import orm, models
@@ -72,6 +71,7 @@ class ImportOldHira(Command):
                     'domain_id': domain['id']
                 }
                 models.Lead.af_save(models.User.find_first(id=user_map[row['user_id']]), data)
+
 
 class ImportTags(Command):
     "import tags from xlsx"
@@ -282,74 +282,8 @@ class ParseGeonames(Command):
     def run(self):
         # self.build_db()
         self.indexloc()
-    """
-    def oldrun(self):
-        import csv
-        import sys
-        import json
-        from whoosh.index import create_in, open_dir, exists_in
-        from whoosh import fields, qparser, query
-        from hira2 import orm, models
-        from hira2.orm import db
 
-        schema = fields.Schema(gid=fields.TEXT(stored=True), country_code=fields.ID(stored=True), names=fields.TEXT)
-        if not exists_in("indexer", indexname="adms"):
-            ix = create_in("indexer", schema, indexname="adms")
-        ix = open_dir("indexer", indexname="adms")
 
-        with ix.searcher() as s:
-            qp = qparser.QueryParser("names", schema=ix.schema)
-            q = qp.parse(u"Westonia")
-            results = s.search(q, limit=20, filter=query.Term("country_code", "AU"))
-            results = s.documents()
-            # results = searcher.search('hey', terms=True)
-            qp = qparser.QueryParser("content", ix.schema)
-            user_q = qp.parse('alo')
-            allow_q = query.Term("country_code", "IL")
-            results = searcher.search(user_q)
-            for res in results:
-                writer.add_document(gid=res['id'], country_code=res['country_code'], names="%s , %s , %s" % (res['name'], res['asciiname'], res['name_alternate']))
-
-        return
-        writer = ix.writer()
-        csv.field_size_limit(sys.maxsize)
-
-        pmap = {}
-        gmap = {}
-        umap = {}
-        with open('import/hierarchy.txt', 'r') as csvfile:
-            reader = csv.reader(csvfile, delimiter='\t')
-            for row in reader:
-                pmap[row[1]] = row[0]
-                umap[row[0]] = True
-                umap[row[1]] = True
-                # print(repr(row))
-        with open('import/allCountries.txt', 'r') as csvfile:
-            reader = csv.reader(csvfile, delimiter='\t')
-            for row in reader:
-                if row[0] in umap:
-                    uid = int(row[0])
-                    obj = {}
-                    if str(uid) in pmap:
-                        obj['parent_id'] = pmap[str(uid)]
-                    obj['id'] = uid
-                    obj['name'] = row[1]
-                    obj['asciiname'] = row[2]
-                    if len(row[3]) > 0:
-                        obj['name_alternate'] = [x.strip() for x in row[3].split(',')]
-                    else:
-                        obj['name_alternate'] = []
-                    obj['latitude'] = row[4]
-                    obj['longitude'] = row[5]
-                    obj['feature_code'] = row[7]
-                    obj['country_code'] = row[8]
-                    writer.add_document(gid=str(uid), country_code=obj['country_code'], names="%s | %s | %s" % (obj['name'], obj['asciiname'], ' | '.join(obj['name_alternate'])))
-                    geoname = models.Geoname(**obj)
-                    geoname.save()
-                    db.session.commit()
-
-        writer.commit()
-    """
 manager = Manager(app)
 manager.add_command('import_tags', ImportTags())
 manager.add_command('import_db', ImportOldHira())

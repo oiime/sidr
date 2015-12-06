@@ -77,6 +77,8 @@ angular.module('sidrApp')
     $scope.entry = entry;
   }
   $scope.countries = LocationService.getCountries(DomainService.getDomainCountries(SessionService.user.state.focus_domain_id));
+  $scope.countries.push({code: null, name:'No Country'});
+
   if(typeof $scope.entry.country_code === 'undefined'){
     $scope.entry.country_code = $scope.countries[0].code;
   }
