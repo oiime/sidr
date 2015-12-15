@@ -70,14 +70,14 @@ angular.module('sidrApp')
   }
 })
 
-.controller('EntryCtrl', function ($scope, $rootScope, $state, $stateParams, $sce, uiGmapIsReady, CONST, entry, Entry, EntryService, APIService, TagService, TagClassService, LocationService, LocationOverlay, DomainService, LeadService, SessionService) {
+.controller('EntryCtrl', function ($scope, $rootScope, $state, $stateParams, $sce, uiGmapIsReady, CONST, entry, Entry, EntryService, APIService, TagService, TagClassService, LocationService, LocationOverlay, DomainService, LeadService, SessionService, tagclassStates) {
   if($stateParams.hasOwnProperty('overlay') && typeof $stateParams.overlay !== 'undefined'){
     $scope.entry = new Entry(angular.fromJson($stateParams.overlay));
   } else {
     $scope.entry = entry;
   }
   $scope.countries = LocationService.getCountries(DomainService.getDomainCountries(SessionService.user.state.focus_domain_id));
-  $scope.countries.push({code: null, name:'No Country'});
+  $scope.countries.push({code: null, name:'OTHER'});
 
   if(typeof $scope.entry.country_code === 'undefined'){
     $scope.entry.country_code = $scope.countries[0].code;
@@ -354,9 +354,11 @@ angular.module('sidrApp')
   };
   // load tag group data
   angular.forEach(['sector', 'vulnerable', 'affected', 'underlying'], function(tag_class){
-    $scope.tagGroups.push({name: tag_class, tags: TagService.getByClass(tag_class), parameters: TagClassService.getClassParamters(tag_class), title: TagClassService.getClassTitle(tag_class)});
-    if(typeof TagClassService.getClassParamters(tag_class) !== 'undefined'){
-      $scope.actions.checkEmptyTag(tag_class);
+    if(!tagclassStates.hasOwnProperty('exclude_tag_classes') || tagclassStates.exclude_tag_classes.indexOf(tag_class) === -1){
+      $scope.tagGroups.push({name: tag_class, tags: TagService.getByClass(tag_class), parameters: TagClassService.getClassParamters(tag_class), title: TagClassService.getClassTitle(tag_class)});
+      if(typeof TagClassService.getClassParamters(tag_class) !== 'undefined'){
+        $scope.actions.checkEmptyTag(tag_class);
+      }
     }
   });
   // load Lead

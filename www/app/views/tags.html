@@ -1,7 +1,22 @@
+<div class="box">
+  <div class="box-body">
+      <div class="form-group">
+        <label class="col-sm-2 control-label">Exclude Domains:</label>
+        <div class="col-sm-10">
+          <ui-select multiple ng-model="states.exclude_domain_ids" theme="bootstrap" ng-change="actions.updateDomainExclusion()">
+            <ui-select-match placeholder="Select domains to exclude...">{{$item.name_display}}</ui-select-match>
+            <ui-select-choices repeat="domain.id as domain in domainsSelect | filter: {name_display: $select.search}">
+              <div ng-bind-html="domain.name_display | highlight: $select.search"></div>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+      </div>
+  </div>
+</div>
+
 <a class="btn" ui-sref="signed.tag({tag_class: tag_class})">
     <i class="fa fa-plus fa-lg"></i> Add new {{tagClassName}}
 </a>
-
 <div class="box">
   <div class="box-body">
     <div class="dataTables_wrapper form-inline dt-bootstrap">

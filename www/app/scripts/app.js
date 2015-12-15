@@ -201,6 +201,9 @@ angular
           requireAuth: true
         },
         resolve: {
+          tagclassStates: function($stateParams, DomainService, SessionService){
+            return DomainService.getDomainTagclassState(SessionService.user.state.focus_domain_id);
+          },
           entry: function($stateParams, EntryService, Entry){
             if($stateParams.id > 0){
               return EntryService.get($stateParams.id);

@@ -1,10 +1,17 @@
 'use strict';
 
 angular.module('sidrApp')
-.controller('TagsCtrl', function ($scope, $rootScope, $state, $stateParams, $confirm, TagService, TagClassService, ngTableParams) {
+.controller('TagsCtrl', function ($scope, $rootScope, $state, $stateParams, $confirm, TagService, TagClassService, DomainService, ngTableParams) {
   $scope.tag_class = $stateParams.tag_class;
   $scope.tagClassName = TagClassService.getClassTitle($scope.tag_class);
+  $scope.domainsSelect = DomainService.getDropdown();
   $scope.tagClassStructure = TagClassService.getClassStructure($scope.tag_class);
+  $scope.states = {
+    exclude_domain_ids: []
+  };
+  TagClassService.getTagClassState($scope.tag_class).then(function(rsp){
+    $scope.states = rsp;
+  })
 
   $rootScope.$broadcast("updatePage", {
       pageCaption: 'Tags',
@@ -12,7 +19,10 @@ angular.module('sidrApp')
   });
 
   $scope.actions = {
-    'delete': function(tag, idx){
+    updateDomainExclusion: function(){
+      TagClassService.updateClassStructure($scope.tag_class, $scope.states);
+    },
+    delete: function(tag, idx){
       $confirm({text: 'Are you sure you want to delete this tag?'}).then(function() {
         TagService.delete(tag.id).then(function(){
           $scope.tableParams.reload();

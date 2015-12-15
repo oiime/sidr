@@ -37,7 +37,6 @@ class EntryLocation(BaseTable):
     def update_locations(cls_, entry, locations):
         cls_.delete({'entry_id': entry.id})
         for data in locations:
-            print(repr(data))
             udata = {
                 'location_id': data['location_id'],
                 'source': data['source'],

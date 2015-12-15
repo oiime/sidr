@@ -44,7 +44,12 @@ angular.module('sidrApp')
         return undefined;
       }
     };
-
+    this.getTagClassState = function(tag_class){
+      return APIService.get('/tag_class/' + tag_class);
+    }
+    this.updateClassStructure = function(tag_class, states){
+      return APIService.post('/tag_class/' + tag_class, states);
+    }
 })
 .service('TagService', function($q, APIService, ObjectsService, Tag){
     var self = this;

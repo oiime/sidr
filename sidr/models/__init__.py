@@ -3,6 +3,7 @@ from .action import Action
 from .tag import Tag
 from .domain import Domain
 from .domain_user import DomainUser
+from .domain_tagclass import DomainTagclass
 from .lead import Lead
 from .entry import Entry
 from .entry_location import EntryLocation

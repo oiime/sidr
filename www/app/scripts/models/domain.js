@@ -48,6 +48,9 @@ angular.module('sidrApp')
       })
       return rsp;
     };
+    this.getDomainTagclassState = function(domain_id){
+      return APIService.get('/domain_tagclasses/' + domain_id);
+    }
 })
 .factory('Domain', function(ObjectService){
   return function(data) {

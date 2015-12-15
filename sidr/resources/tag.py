@@ -33,7 +33,18 @@ class TagsResource(Resource):
         return self.respond(models.Tag.af_find(current_user, self.get_request()))
 
 
+class TagClassResource(Resource):
+    method_decorators = [role_required(const.ROLE_ADMIN)]
+
+    def get(self, tag_class):
+        return self.respond(models.DomainTagclass.af_get_tag_class_states(current_user, tag_class))
+
+    def post(self, tag_class):
+        return self.respond(models.DomainTagclass.af_update_tag_class(current_user, tag_class, self.get_request()))
+
+
 def init_app(app):
     app.add_resource(TagClassesResource, '/tag_classes')
+    app.add_resource(TagClassResource, '/tag_class', '/tag_class/<string:tag_class>')
     app.add_resource(TagResource, '/tag', '/tag/<int:obj_id>')
     app.add_resource(TagsResource, '/tags')
