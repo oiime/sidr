@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('sidrApp')
-.controller('LeadsCtrl', function ($scope, $rootScope, $state, LeadService, SessionService, LocationService, TagService, ngTableParams, CONST) {
+.controller('LeadsCtrl', function ($scope, $rootScope, $state, UserService, LeadService, SessionService, LocationService, TagService, ngTableParams, CONST) {
   $rootScope.$broadcast("updatePage", {
       pageCaption: 'Leads',
       pageSubCaption:  ''
@@ -10,6 +10,13 @@ angular.module('sidrApp')
     csv: '',
     json: ''
   }
+
+  $scope.usersDropdown = [];
+  UserService.getUsersMap().then(function(res){
+    angular.forEach(res.result, function(row){
+      $scope.usersDropdown.push({id: row.id, title: row.name});
+    });
+  })
   $scope.leadStatus = LeadService.getLeadStatusMap();
   $scope.leadStatusDropdown = LeadService.getLeadStatusDropdown();
   $scope.leadTypes = LeadService.getTypesDropdown();
@@ -46,7 +53,8 @@ angular.module('sidrApp')
     }
   }
 })
-.controller('LeadCtrl', function ($scope, $rootScope, $state, lead, Lead, LeadService, APIService, TagService, LocationService) {
+.controller('LeadCtrl', function ($scope, $rootScope, $state, users, lead, Lead, LeadService, APIService, TagService, LocationService) {
+  $scope.users = users;
   $scope.lead = lead;
   $scope.countries = LocationService.getCountries();
   $scope.serverErrors = [];
@@ -109,7 +117,7 @@ angular.module('sidrApp')
               }
               else{
                 $state.transitionTo('signed.lead', {'lead_type': rsp.lead_type}, {reload: true}).then(function(){
-                  
+
                 });
               }
             },

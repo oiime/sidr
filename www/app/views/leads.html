@@ -23,6 +23,9 @@
                   <br/>
                   <a ui-sref="signed.user({user_id: lead.user_id})">{{lead.user.name}}</a>
               </td>
+              <td data-title="'Assigned'" filter="{ 'assignee_id': 'selector' }" sortable="'assignee_id'" filter-data="usersDropdown">
+                  <a ui-sref="signed.user({user_id: lead.assignee_id})">{{lead.user_assigned.name}}</a>
+              </td>
               <td data-title="'Name'" filter="{ 'name': 'text' }" sortable="'name'">
                   {{lead.name}}
               </td>

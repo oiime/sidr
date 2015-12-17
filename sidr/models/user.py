@@ -66,6 +66,10 @@ class User(ObjectTable, UserMixin):
             raise ApiValidationError(ValidationError('Email already exists'))
 
     @classmethod
+    def af_map(cls_, current_user):
+        return cls_.af_find(current_user, {'status': const.STATUS_ACTIVE})
+
+    @classmethod
     def af_find(cls_, current_user, data):
         q = UserQuery(current_user)
         q.assign_request(data)

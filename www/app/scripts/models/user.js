@@ -28,6 +28,9 @@ angular.module('sidrApp')
 
       return rsp;
     }
+    this.getUsersMap = function(){
+        return APIService.get('/users/map');
+    };
     this.getUserStatusDropdown = function(){
       var rsp = [];
       angular.forEach(self.getUserStatusMap(), function(name, id){

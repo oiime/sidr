@@ -56,9 +56,20 @@ angular.module('sidrApp')
           'website': null,
           'url': null,
           'published_at': null,
+          'assignee_id': null,
           'binbags': []
       };
       angular.extend(this, ObjectService.overload(this))
       angular.extend(this, data);
+
+      this.postprocessExport = function(obj){
+        angular.forEach(obj, function(value, key){
+          console.log(key);
+          if(['binbags', 'published_at'].indexOf(key) !== -1 && obj[key] === null){
+            delete obj[key];
+          }
+        });
+        return obj;
+      }
   };
 });

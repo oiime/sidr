@@ -171,6 +171,9 @@ angular
           requireAuth: true
         },
         resolve: {
+          users: function(UserService){
+            return UserService.getUsersMap();
+          },
           lead: function($stateParams, SessionService, LeadService, Lead){
             if($stateParams.id > 0){
               return LeadService.get($stateParams.id);

@@ -41,7 +41,18 @@ class UsersResource(Resource):
         return self.respond(models.User.af_find(current_user, self.get_request()))
 
 
+class UsersMapResource(Resource):
+    method_decorators = [login_required]
+
+    def get(self):
+        return self.post()
+
+    def post(self):
+        return self.respond(models.User.af_map(current_user))
+
+
 def init_app(app):
     app.add_resource(RegisterResource, '/register')
     app.add_resource(UsersResource, '/users')
+    app.add_resource(UsersMapResource, '/users/map')
     app.add_resource(UserResource, '/user', '/user/<int:obj_id>')

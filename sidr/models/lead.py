@@ -4,6 +4,7 @@ import io
 from sidr import validator, const
 from sidr.orm import db, sa_utils
 from .model import ObjectTable, Query, QueryFilterEq, QueryFilterEqDate, QueryFilterLike
+from .user import User
 
 __all__ = ['Lead']
 
@@ -49,10 +50,11 @@ class Lead(ObjectTable):
     __tablename__ = 'lead'
 
     __export__ = {
-        const.ACL_READ:  ['id', 'user_id', 'domain_id', 'lead_type', 'status', 'name', 'data', 'created_at', 'published_at', 'binbags', 'source_id', 'website', 'url']
+        const.ACL_READ: ['id', 'user_id', 'assignee_id', 'domain_id', 'lead_type', 'status', 'name', 'data', 'created_at', 'published_at', 'binbags', 'source_id', 'website', 'url']
     }
 
     user_id = db.Column(db.BigInteger, db.ForeignKey('user.id'), index=True)
+    assignee_id = db.Column(db.BigInteger)
     domain_id = db.Column(db.BigInteger, db.ForeignKey('domain.id'), index=True)
     source_id = db.Column(db.BigInteger, db.ForeignKey('tag.id'), index=True)
     lead_type = db.Column(db.String(255))
@@ -130,11 +132,13 @@ class Lead(ObjectTable):
 
 class LeadQuery(Query):
     __model__ = Lead
-    __sortable__ = ['id', 'name', 'lead_type', 'created_at', 'published_at', 'source_id', 'website', 'status']
+    __sortable__ = ['id', 'name', 'assignee_id', 'lead_type', 'created_at', 'published_at', 'source_id', 'website', 'status']
     __sortable_default__ = ('id', 'DESC')
     __filters__ = {
         'id': QueryFilterEq(Lead.id),
         'name': QueryFilterLike(Lead.name),
+        'user_id': QueryFilterEq(Lead.user_id),
+        'assignee_id': QueryFilterEq(Lead.assignee_id),
         'lead_type': QueryFilterEq(Lead.lead_type),
         'source_id': QueryFilterEq(Lead.source_id),
         'domain_id': QueryFilterEq(Lead.domain_id),
@@ -148,6 +152,8 @@ class LeadQuery(Query):
         rsp = row.jsonify(acl=const.ACL_READ)
         if row.user is not None:
             rsp['user'] = row.user.jsonify(acl=const.ACL_READ)
+        if row.assignee_id is not None:
+            rsp['user_assigned'] = User.get(row.assignee_id).jsonify(acl=const.ACL_READ)
         return rsp
 
     def postprocess_results(self, rows):
