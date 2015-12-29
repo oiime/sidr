@@ -50,7 +50,7 @@ class Lead(ObjectTable):
     __tablename__ = 'lead'
 
     __export__ = {
-        const.ACL_READ: ['id', 'user_id', 'assignee_id', 'domain_id', 'lead_type', 'status', 'name', 'data', 'created_at', 'published_at', 'binbags', 'source_id', 'website', 'url']
+        const.ACL_READ: ['id', 'user_id', 'assignee_id', 'domain_id', 'lead_type', 'status', 'name', 'data', 'confidentiality', 'created_at', 'published_at', 'binbags', 'source_id', 'website', 'url']
     }
 
     user_id = db.Column(db.BigInteger, db.ForeignKey('user.id'), index=True)
@@ -63,6 +63,7 @@ class Lead(ObjectTable):
     name = db.Column(db.String(255))
     description = db.Column(db.Text)
     website = db.Column(db.String(255))
+    confidentiality = db.Column(db.SmallInteger, default=const.CONFIDENTIALITY_UNPROTECTED)
     url = db.Column(db.Text)
     published_at = db.Column(db.DateTime)
 
@@ -72,6 +73,7 @@ class Lead(ObjectTable):
         "?name": "string",
         "?status": validator.Enum([const.STATUS_ACTIVE, const.STATUS_INACTIVE, const.STATUS_PENDING, const.STATUS_DELETED]),
         "#domain_id": "integer",
+        "?confidentiality": "integer",
         "#lead_type": validator.Enum(lead_type_dict.keys()),
         "#source_id": validator.Tag(tag_class='source'),
         "?description": "string",
@@ -132,12 +134,13 @@ class Lead(ObjectTable):
 
 class LeadQuery(Query):
     __model__ = Lead
-    __sortable__ = ['id', 'name', 'assignee_id', 'lead_type', 'created_at', 'published_at', 'source_id', 'website', 'status']
+    __sortable__ = ['id', 'name', 'assignee_id', 'lead_type', 'confidentiality', 'created_at', 'published_at', 'source_id', 'website', 'status']
     __sortable_default__ = ('id', 'DESC')
     __filters__ = {
         'id': QueryFilterEq(Lead.id),
         'name': QueryFilterLike(Lead.name),
         'user_id': QueryFilterEq(Lead.user_id),
+        'confidentiality': QueryFilterEq(Lead.confidentiality),
         'assignee_id': QueryFilterEq(Lead.assignee_id),
         'lead_type': QueryFilterEq(Lead.lead_type),
         'source_id': QueryFilterEq(Lead.source_id),
@@ -177,12 +180,13 @@ class LeadQuery(Query):
         if self.rtype == 'csv':
             output = io.StringIO()
             writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
-            writer.writerow(['user_id', 'user_name', 'name', 'lead_type', 'source', 'website', 'url', 'entries_count', 'created_at', 'published_at'])
+            writer.writerow(['user_id', 'user_name', 'name', 'confidentiality', 'lead_type', 'source', 'website', 'url', 'entries_count', 'created_at', 'published_at'])
             for row in res['result']:
                 writer.writerow([
                     row['user']['id'],
                     row['user']['name'],
                     row['name'],
+                    row['confidentiality'],
                     row['lead_type'],
                     row['source_id'],
                     row['website'],

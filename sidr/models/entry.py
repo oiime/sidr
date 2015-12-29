@@ -38,7 +38,7 @@ class Entry(ObjectTable):
         "#severity": "integer",
         "#reliability": "integer",
         "?status": validator.Enum([const.STATUS_ACTIVE, const.STATUS_INACTIVE, const.STATUS_DELETED]),
-        "#status_ord": validator.Tag(tag_class='status'),
+        "?status_ord": validator.Tag(tag_class='status'),
         "?timeline": validator.Tag(tag_class='timeline'),
         "?country_code": validator.Enum([None] + [country.alpha2 for country in pycountry.countries]),
         "#tags": {

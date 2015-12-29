@@ -32,6 +32,9 @@
               <td data-title="'Published'" filter="{ 'published_at': 'daterangepicker' }" sortable="'published_at'">
                   {{lead.published_at | amDateFormat:'DD/MM/YYYY'}}
               </td>
+              <td data-title="'Confidentiality'" filter="{ 'confidentiality': 'selector' }" sortable="'confidentiality'" filter-data="confidentialityDropdown">
+                  {{confidentiality[lead.confidentiality]}}
+              </td>
               <td data-title="'Type'" filter="{ 'lead_type': 'selector' }" sortable="'lead_type'" filter-data="leadTypes">
                   {{lead.lead_type}}
               </td>

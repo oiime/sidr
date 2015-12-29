@@ -17,6 +17,8 @@ angular.module('sidrApp')
       $scope.usersDropdown.push({id: row.id, title: row.name});
     });
   })
+  $scope.confidentiality = LeadService.getConfidentialityMap();
+  $scope.confidentialityDropdown = LeadService.getConfidentialityDropdown();
   $scope.leadStatus = LeadService.getLeadStatusMap();
   $scope.leadStatusDropdown = LeadService.getLeadStatusDropdown();
   $scope.leadTypes = LeadService.getTypesDropdown();
@@ -57,6 +59,7 @@ angular.module('sidrApp')
   $scope.users = users;
   $scope.lead = lead;
   $scope.countries = LocationService.getCountries();
+  $scope.confidentialityDropdown = LeadService.getConfidentialityDropdown();
   $scope.serverErrors = [];
   $scope.tags = TagService.getByClass('source');
 
@@ -75,7 +78,6 @@ angular.module('sidrApp')
       if(typeof $scope.lead.binbags === 'undefined' || $scope.lead.binbags === null){
         $scope.lead.binbags = [];
       }
-      console.log($scope.lead.binbags);
       $scope.lead.binbags.push(response);
       fileItem.remove();
   };
