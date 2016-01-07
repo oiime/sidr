@@ -1,6 +1,6 @@
 'use strict';
 angular.module('sidrApp')
-.service('UserService', function($q, CONST, APIService, ObjectsService, User){
+.service('UserService', function($q, CONST, ENV, APIService, ObjectsService, User){
     angular.extend(this, ObjectsService.overload(this, 'user', User));
     var self = this;
     this.save = function(user){
@@ -10,6 +10,12 @@ angular.module('sidrApp')
       else {
           return user.save(APIService.post('/user/' + user.id, user.export()));
       }
+    };
+    this.sendResetLink = function(email){
+      return APIService.post('/user/reset/send', {email: email, returnurl: ENV.frontendRoot + 'resetrecieve?token='});
+    };
+    this.sendResetToken = function(token, password){
+      return APIService.post('/user/reset/recieve', {token: token, password: password});
     };
     this.setState = function(user, k, v){
       var state = user.state;

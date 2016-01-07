@@ -23,4 +23,44 @@ angular.module('sidrApp')
             });
     }
   };
-});
+})
+.controller('ResetCtrl', function ($scope, $state, UserService) {
+  $scope.email = null;
+  $scope.sent = false;
+  $scope.actions = {
+    submit: function(form){
+      $scope.serverErrors = [];
+      UserService.sendResetLink($scope.email).then(
+            function(rsp){
+               $scope.sent = true;
+            },
+            function(res){
+                if(typeof res.data.message !== 'undefined'){
+                  $scope.serverErrors.push(res.data.message);
+                }
+            });
+    }
+  };
+})
+.controller('ResetRecieveCtrl', function ($scope, $state, $stateParams, UserService) {
+  $scope.password = null;
+  $scope.password2 = null;
+  $scope.serverErrors = [];
+
+  $stateParams.token;
+
+  $scope.actions = {
+    submit: function(form){
+      $scope.serverErrors = [];
+      UserService.sendResetToken($stateParams.token, $scope.password).then(
+            function(rsp){
+               $state.transitionTo('login');
+            },
+            function(res){
+                if(typeof res.data.message !== 'undefined'){
+                  $scope.serverErrors.push(res.data.message);
+                }
+            });
+    }
+  };
+})

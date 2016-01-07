@@ -1,0 +1,25 @@
+<div class="login-box">
+  <div class="login-logo">
+    <a ui-sref="home"><b>SIDR</b>{{ENV.VERSION}}</a>
+  </div><!-- /.login-logo -->
+  <div class="login-box-body" ng-show="sent">
+    <p>Reset link sent to {{email}}</p>
+  </div>
+  <div class="login-box-body" ng-show="!sent">
+    <div ng-include="'views/snippets/form_errors.html'"/>
+
+    <p class="login-box-msg">Send password reset link</p>
+    <form name="rememberForm" data-ng-submit="actions.submit(rememberForm, credentials)">
+      <div class="form-group has-feedback">
+        <input ng-model="email" type="email" class="form-control" placeholder="Email" />
+        <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+      </div>
+      <div class="row">
+        <div class="col-xs-8">
+        </div><!-- /.col -->
+        <div class="col-xs-4">
+          <button type="submit" class="btn btn-primary btn-block btn-flat">Send Reset</button>
+        </div><!-- /.col -->
+      </div>
+    </form>
+  </div><!-- /.login-box-body -->

@@ -14,7 +14,10 @@
           <div class="form-group has-feedback">
             <input ng-model="credentials.password" type="password" class="form-control" placeholder="Password" />
             <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+            <a ui-sref="reset">Forgot your password? Click here to reset</a></li>
+
           </div>
+
           <div class="row">
             <div class="col-xs-8">
             </div><!-- /.col -->
@@ -22,8 +25,9 @@
               <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
             </div><!-- /.col -->
           </div>
+          <a ui-sref="register" class="text-center">Register a new membership</a>
+
         </form>
 
-        <a ui-sref="register" class="text-center">Register a new membership</a>
 
       </div><!-- /.login-box-body -->

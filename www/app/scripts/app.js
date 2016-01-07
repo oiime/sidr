@@ -85,6 +85,16 @@ angular
         controller: 'LoginCtrl',
         templateUrl: "views/login.html"
       })
+      .state('reset', {
+        url: "/reset",
+        controller: 'ResetCtrl',
+        templateUrl: "views/reset.html"
+      })
+      .state('resetrecieve', {
+        url: "/resetrecieve?token",
+        controller: 'ResetRecieveCtrl',
+        templateUrl: "views/resetrecieve.html"
+      })
       .state('signed', {
         templateUrl: "views/signed.html",
         controller: 'SignedCtrl',

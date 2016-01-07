@@ -51,8 +51,22 @@ class UsersMapResource(Resource):
         return self.respond(models.User.af_map(current_user))
 
 
+class UserResetSendResource(Resource):
+    def post(self):
+        req = self.get_request()
+        return self.respond(models.User.af_reset_send(req['email'], req['returnurl']))
+
+
+class UserResetReceieveResource(Resource):
+    def post(self):
+        req = self.get_request()
+        return self.respond(models.User.af_reset_recieve(req['token'], req['password']))
+
+
 def init_app(app):
     app.add_resource(RegisterResource, '/register')
     app.add_resource(UsersResource, '/users')
     app.add_resource(UsersMapResource, '/users/map')
     app.add_resource(UserResource, '/user', '/user/<int:obj_id>')
+    app.add_resource(UserResetSendResource, '/user/reset/send')
+    app.add_resource(UserResetReceieveResource, '/user/reset/recieve')

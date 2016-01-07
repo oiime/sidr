@@ -1,6 +1,9 @@
+import itsdangerous
+from flask import current_app
 from flask.ext.login import UserMixin
+from itsdangerous import JSONWebSignatureSerializer
 from sqlalchemy.exc import IntegrityError
-from sidr import validator, const
+from sidr import validator, const, mailer
 from sidr.orm import db, sa_utils
 from sidr.validator import ApiValidationError, ValidationError
 from .model import ObjectTable, Query, QueryFilterEq, QueryFilterEqDate, random_string
@@ -74,6 +77,31 @@ class User(ObjectTable, UserMixin):
         q = UserQuery(current_user)
         q.assign_request(data)
         return q.execute()
+
+    @classmethod
+    def af_reset_send(cls_, email, returnurl):
+        user = cls_.find_first({'email': email})
+        if not user:
+            raise ApiValidationError(ValidationError('Unknown email'))
+
+        serializer = JSONWebSignatureSerializer(current_app.config['API_KEY'])
+        resettoken = serializer.dumps({"id": user.id, "signature": user.signature}).decode('utf-8')
+        content = 'Click here to reset your password: %s' % (returnurl + resettoken)
+        mailer.send(user.email, user.name, 'Password reset link', content)
+        return {'success': True}
+
+    @classmethod
+    def af_reset_recieve(cls_, token, password):
+        serializer = JSONWebSignatureSerializer(current_app.config['API_KEY'])
+        try:
+            payload = serializer.loads(token)
+            user = cls_.get(payload['id'])
+            if user is None or payload['signature'] != user.signature or user.status != const.STATUS_ACTIVE:
+                raise ApiValidationError(ValidationError('User reset not allowed'))
+            user.update(password=password, signature=random_string())
+            return user.jsonify(acl=const.ACL_OWNER)
+        except (itsdangerous.SignatureExpired, itsdangerous.BadSignature):
+            raise ApiValidationError(ValidationError('Token is broken'))
 
     def connect_domain(self, domain_id):
         from sidr.models import DomainUser
