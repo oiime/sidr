@@ -126,13 +126,8 @@ class TagClassSource(TagClass):
     __structure__ = copy.deepcopy(TagClass.__structure__)
 
 
-class TagClassConflictDevelopment(TagClass):
-    __title__ = 'Conflict Development'
-    __structure__ = copy.deepcopy(TagClass.__structure__)
-
-
-class TagClassPoliticalDevelopment(TagClass):
-    __title__ = 'Political Development'
+class TagClassCrisisDriver(TagClass):
+    __title__ = 'Crisis Driver'
     __structure__ = copy.deepcopy(TagClass.__structure__)
 
 
@@ -145,8 +140,7 @@ tag_class_dict = {
     'status': TagClassStatus(),
     'timeline': TagClassTimeline(),
     'event_type': TagClassEventType(),
-    'conflict_development': TagClassConflictDevelopment(),
-    'political_development': TagClassPoliticalDevelopment()
+    'crisis_driver': TagClassCrisisDriver(),
 }
 
 

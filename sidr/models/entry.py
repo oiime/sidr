@@ -46,8 +46,7 @@ class Entry(ObjectTable):
             '?vulnerable': [validator.TagBlock(tag_class='vulnerable')],
             '?affected': [validator.TagBlock(tag_class='affected')],
             '?underlying': [validator.Tag(tag_class='underlying')],
-            '?conflict_development': [validator.Tag(tag_class='conflict_development')],
-            '?political_development': [validator.Tag(tag_class='political_development')]
+            '?crisis_driver': [validator.Tag(tag_class='crisis_driver')]
         },
         "#locations": [{
             "+source": validator.Enum([const.LOCATION_SOURCE_GEONAME, const.LOCATION_SOURCE_GOOGLE_MAP_SHAPE, const.LOCATION_SOURCE_SELF]),
@@ -219,6 +218,7 @@ class EntryQuery(Query):
             row['lead_id'],
             row['status'],
             self.get_csv_tag_block('sector', row),
+            self.get_csv_tag_block('crisis_driver', row),
             self.get_csv_tag_block('vulnerable', row),
             self.get_csv_tag_block('affected', row),
             self.get_csv_tag_block('underlying', row),
@@ -228,7 +228,7 @@ class EntryQuery(Query):
     def postprocess_response_csv(self, res):
         output = io.StringIO()
         writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
-        writer.writerow(['user_id', 'user_name', 'lead_id', 'status', 'sector', 'vulnerable', 'affected', 'underlying', 'created_at'])
+        writer.writerow(['user_id', 'user_name', 'lead_id', 'status', 'sector', 'crisis_driver', 'vulnerable', 'affected', 'underlying', 'created_at'])
         for row in res['result']:
             writer.writerow(self.get_csv_row(row))
         return output.getvalue()
@@ -257,7 +257,7 @@ class EntryQuery(Query):
     def postprocess_response_csv_permutated(self, res):
         output = io.StringIO()
         writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
-        writer.writerow(['user_id', 'user_name', 'lead_id', 'status', 'sector', 'vulnerable', 'affected', 'underlying', 'created_at'])
+        writer.writerow(['user_id', 'user_name', 'lead_id', 'status', 'sector', 'crisis_driver', 'vulnerable', 'affected', 'underlying', 'created_at'])
         rows = []
         for row in res['result']:
             rows.extend(self.extract_tag_permutations(row))
