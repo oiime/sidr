@@ -2,6 +2,7 @@ import csv
 import io
 import copy
 import pycountry
+import json
 from itertools import product
 from sidr import validator, const
 from sidr.orm import db, sa_utils
@@ -187,6 +188,8 @@ class EntryQuery(Query):
         'information_at': QueryFilterEqDate(Entry.created_at)
     }
 
+    csv_headers = ['id', 'user_id', 'user_name', 'lead_id', 'status', 'severity', 'reliability', 'timeline', 'sector', 'crisis_driver', 'vulnerable', 'affected', 'underlying', 'country_code', 'location_self', 'location_geoname', 'location_google', 'created_at']
+
     def jsonify(self, row):
         return row.jsonify_complete(acl=const.ACL_READ)
 
@@ -204,8 +207,31 @@ class EntryQuery(Query):
         if tag_class in row['tags']:
             opts = [self.tag_map[tag['id']] for tag in row['tags'][tag_class]]
             return ','.join(opts)
+        elif tag_class in row and row[tag_class] is not None:
+            return self.tag_map[row[tag_class]]
         else:
             return ''
+
+    def get_csv_location_block(self, ltype, locations):
+        def parse_location_self(loc):
+            return '@TODO'
+
+        def parse_location_geoname(loc):
+            return loc['asciiname']
+
+        def parse_location_google(loc):
+            return json.dumps(loc['data'])
+
+        lparses = {
+            const.LOCATION_SOURCE_SELF: parse_location_self,
+            const.LOCATION_SOURCE_GEONAME: parse_location_geoname,
+            const.LOCATION_SOURCE_GOOGLE_MAP_SHAPE: parse_location_google
+        }
+        opts = []
+        for loc in locations:
+            if loc['source'] is ltype:
+                opts.append(lparses[ltype](loc))
+        return ','.join(opts)
 
     def get_csv_row(self, row):
         if not hasattr(self, 'tag_map'):
@@ -213,22 +239,30 @@ class EntryQuery(Query):
             self.tag_map = Tag.get_id_map()
 
         return [
+            row['id'],
             row['user']['id'] if 'user' in row else '',
             row['user']['name'] if 'user' in row else '',
             row['lead_id'],
             row['status'],
+            row['severity'],
+            row['reliability'],
+            self.get_csv_tag_block('timeline', row),
             self.get_csv_tag_block('sector', row),
             self.get_csv_tag_block('crisis_driver', row),
             self.get_csv_tag_block('vulnerable', row),
             self.get_csv_tag_block('affected', row),
             self.get_csv_tag_block('underlying', row),
+            row['country_code'],
+            self.get_csv_location_block(const.LOCATION_SOURCE_SELF, row['locations']),
+            self.get_csv_location_block(const.LOCATION_SOURCE_GEONAME, row['locations']),
+            self.get_csv_location_block(const.LOCATION_SOURCE_GOOGLE_MAP_SHAPE, row['locations']),
             row['created_at']
         ]
 
     def postprocess_response_csv(self, res):
         output = io.StringIO()
         writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
-        writer.writerow(['user_id', 'user_name', 'lead_id', 'status', 'sector', 'crisis_driver', 'vulnerable', 'affected', 'underlying', 'created_at'])
+        writer.writerow(self.csv_headers)
         for row in res['result']:
             writer.writerow(self.get_csv_row(row))
         return output.getvalue()
@@ -254,15 +288,28 @@ class EntryQuery(Query):
             rows.append(row)
         return rows
 
+    def extract_location_permutations(self, row):
+        if row['locations'] is None or len(row['locations']) == 0:
+            return [row]
+        rows = []
+        for loc in row['locations']:
+            prow = copy.deepcopy(row)
+            prow['locations'] = [loc]
+            rows.append(prow)
+        return rows
+
     def postprocess_response_csv_permutated(self, res):
         output = io.StringIO()
         writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
-        writer.writerow(['user_id', 'user_name', 'lead_id', 'status', 'sector', 'crisis_driver', 'vulnerable', 'affected', 'underlying', 'created_at'])
-        rows = []
+        writer.writerow(self.csv_headers)
+        rows_step1 = []
+        rows_step2 = []
         for row in res['result']:
-            rows.extend(self.extract_tag_permutations(row))
+            rows_step1.extend(self.extract_tag_permutations(row))
+        for row in rows_step1:
+            rows_step2.extend(self.extract_location_permutations(row))
 
-        for row in rows:
+        for row in rows_step2:
             writer.writerow(self.get_csv_row(row))
 
         return output.getvalue()
