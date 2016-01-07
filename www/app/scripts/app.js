@@ -119,6 +119,9 @@ angular
         templateUrl: "views/home.html",
         resolve: {
           locations: function(APIService, SessionService){
+            if(SessionService.user.state === null){
+              return [];
+            }
             return APIService.get('/overview/locations/' + SessionService.user.state.focus_domain_id);
           },
           actions: function(APIService){

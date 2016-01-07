@@ -125,6 +125,17 @@ class TagClassSource(TagClass):
     __title__ = 'Source'
     __structure__ = copy.deepcopy(TagClass.__structure__)
 
+
+class TagClassConflictDevelopment(TagClass):
+    __title__ = 'Conflict Development'
+    __structure__ = copy.deepcopy(TagClass.__structure__)
+
+
+class TagClassPoliticalDevelopment(TagClass):
+    __title__ = 'Political Development'
+    __structure__ = copy.deepcopy(TagClass.__structure__)
+
+
 tag_class_dict = {
     'vulnerable': TagClassVulnerable(),
     'affected': TagClassAffected(),
@@ -133,7 +144,9 @@ tag_class_dict = {
     'sector': TagClassSector(),
     'status': TagClassStatus(),
     'timeline': TagClassTimeline(),
-    'event_type': TagClassEventType()
+    'event_type': TagClassEventType(),
+    'conflict_development': TagClassConflictDevelopment(),
+    'political_development': TagClassPoliticalDevelopment()
 }
 
 

@@ -10,7 +10,7 @@ angular.module('sidrApp')
     csv: '',
     json: ''
   }
-  $scope.tagsSelectorPulldown = TagService.getByClass(['sector', 'vulnerable', 'affected', 'underlying']);
+  $scope.tagsSelectorPulldown = TagService.getByClass(['sector', 'vulnerable', 'affected', 'underlying', 'conflict_development', 'political_development']);
   $scope.TagClassService = TagClassService;
   $scope.tagTitles = TagService.getTitleMap();
   $scope.entryStatus = EntryService.getEntryStatusMap();
@@ -353,7 +353,7 @@ angular.module('sidrApp')
     }
   };
   // load tag group data
-  angular.forEach(['sector', 'vulnerable', 'affected', 'underlying'], function(tag_class){
+  angular.forEach(['sector', 'vulnerable', 'affected', 'underlying', 'conflict_development', 'political_development'], function(tag_class){
     if(!tagclassStates.hasOwnProperty('exclude_tag_classes') || tagclassStates.exclude_tag_classes.indexOf(tag_class) === -1){
       $scope.tagGroups.push({name: tag_class, tags: TagService.getByClass(tag_class), parameters: TagClassService.getClassParamters(tag_class), title: TagClassService.getClassTitle(tag_class)});
       if(typeof TagClassService.getClassParamters(tag_class) !== 'undefined'){

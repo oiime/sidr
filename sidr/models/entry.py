@@ -46,6 +46,8 @@ class Entry(ObjectTable):
             '?vulnerable': [validator.TagBlock(tag_class='vulnerable')],
             '?affected': [validator.TagBlock(tag_class='affected')],
             '?underlying': [validator.Tag(tag_class='underlying')],
+            '?conflict_development': [validator.Tag(tag_class='conflict_development')],
+            '?political_development': [validator.Tag(tag_class='political_development')]
         },
         "#locations": [{
             "+source": validator.Enum([const.LOCATION_SOURCE_GEONAME, const.LOCATION_SOURCE_GOOGLE_MAP_SHAPE, const.LOCATION_SOURCE_SELF]),

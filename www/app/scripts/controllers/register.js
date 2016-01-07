@@ -6,15 +6,17 @@ angular.module('sidrApp')
   $scope.serverErrors = [];
 
   $scope.actions = {
-    'submit': function(form){
+    submit: function(form){
       $scope.serverErrors = [];
       UserService.save($scope.user).then(
             function(rsp){
               var user = new User(rsp.user);
               AuthService.assign(rsp.token, user);
-               $state.transitionTo('signed.home').then(function(){
+              $state.transitionTo('signed.home').then(function(){
                  // notification or something
-               });
+              }, function(err){
+                console.error(err);
+              });
             },
             function(res){
               if(typeof res.data.message !== 'undefined'){
