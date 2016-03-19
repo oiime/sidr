@@ -66,6 +66,7 @@ angular.module('sidrApp')
           'domain_id': null,
           'lead_type': null,
           'source_id': null,
+          'content_format_id': null,
           'name': null,
           'confidentiality': null,
           'description': null,

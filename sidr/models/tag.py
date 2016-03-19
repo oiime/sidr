@@ -126,6 +126,11 @@ class TagClassSource(TagClass):
     __structure__ = copy.deepcopy(TagClass.__structure__)
 
 
+class TagClassContentFormat(TagClass):
+    __title__ = 'Content Format'
+    __structure__ = copy.deepcopy(TagClass.__structure__)
+
+
 class TagClassCrisisDriver(TagClass):
     __title__ = 'Crisis Driver'
     __structure__ = copy.deepcopy(TagClass.__structure__)
@@ -136,6 +141,7 @@ tag_class_dict = {
     'affected': TagClassAffected(),
     'underlying': TagClassUnderlying(),
     'source': TagClassSource(),
+    'content_format': TagClassContentFormat(),
     'sector': TagClassSector(),
     'status': TagClassStatus(),
     'timeline': TagClassTimeline(),

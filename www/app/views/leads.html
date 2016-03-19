@@ -41,6 +41,9 @@
               <td data-title="'Source'" filter="{ 'source_id': 'selector' }" sortable="'source_id'" filter-data="tagsPulldown">
                   {{tagTitles[lead.source_id]}}
               </td>
+              <td data-title="'Content Format'" filter="{ 'content_format_id': 'selector' }" sortable="'content_format_id'" filter-data="tagsPulldownContentFormat">
+                  {{tagTitlesContentFormat[lead.content_format_id]}}
+              </td>
               <td data-title="'Website'" filter="{ 'website': 'text' }" sortable="'website'">
                   <a href="{{lead.url}}">{{lead.website}}</a>
               </td>

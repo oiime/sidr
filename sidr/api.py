@@ -104,6 +104,7 @@ def when_request_finished(sender, response, **extra):
 
 
 def init_app(bp, app):
+    print(repr("hello"))
     app.config['MAX_CONTENT_LENGTH'] = 64 * 1024 * 1024
     api = AdaptedApi(bp)
     serializer = itsdangerous.JSONWebSignatureSerializer(app.config['API_KEY'])

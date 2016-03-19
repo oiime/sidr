@@ -11,13 +11,12 @@ class BinbagResource(Resource):
         data = {}
         file = request.files['file']
         filename = secure_filename(file.filename)
-        content = file.read()
+
         data = {
             'name': filename,
-            'content': content,
             'mime': file.content_type
         }
-        return self.respond(models.Binbag.af_save(current_user, data, obj_id))
+        return self.respond(models.Binbag.af_save(current_user, data, file, obj_id))
 
     """
     def get(self, obj_id=None):
@@ -28,7 +27,8 @@ class BinbagResource(Resource):
 class BinbagContentResource(Resource):
     def get(self, obj_id):
         binbag = models.Binbag.get(obj_id, required=True)
-        response = make_response(binbag.content)
+        print(repr(binbag.get_content()))
+        response = make_response(binbag.get_content())
         response.headers["Content-Type"] = binbag.mime
         response.headers["Content-Disposition"] = "attachment; filename=%s" % binbag.name
         return response

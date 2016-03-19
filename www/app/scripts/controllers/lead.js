@@ -22,8 +22,13 @@ angular.module('sidrApp')
   $scope.leadStatus = LeadService.getLeadStatusMap();
   $scope.leadStatusDropdown = LeadService.getLeadStatusDropdown();
   $scope.leadTypes = LeadService.getTypesDropdown();
+
   $scope.tagsPulldown = TagService.getDropdown('source');
   $scope.tagTitles = TagService.getTitleMap('source');
+
+  $scope.tagsPulldownContentFormat = TagService.getDropdown('content_format');
+  $scope.tagTitlesContentFormat = TagService.getTitleMap('content_format');
+
   $scope.LeadService = LeadService;
   $scope.countries = LocationService.getCountriesDropdown();
   $scope.tableParams = new ngTableParams({
@@ -62,6 +67,7 @@ angular.module('sidrApp')
   $scope.confidentialityDropdown = LeadService.getConfidentialityDropdown();
   $scope.serverErrors = [];
   $scope.tags = TagService.getByClass('source');
+  $scope.tagsContentFormat = TagService.getByClass('content_format');
 
   $scope.today = function() {
     $scope.dt = new Date();
@@ -74,7 +80,6 @@ angular.module('sidrApp')
   var uploader = $scope.uploader = APIService.uploader('/binbag');
 
   uploader.onSuccessItem = function(fileItem, response, status, headers) {
-      console.info('onSuccessItem', fileItem, response, status, headers);
       if(typeof $scope.lead.binbags === 'undefined' || $scope.lead.binbags === null){
         $scope.lead.binbags = [];
       }

@@ -55,6 +55,12 @@ angular.module('sidrApp')
           $scope.overview = res;
         })
       }
+    },
+    signOut: function(){
+      SessionService.destroy();
+      $state.transitionTo('login').then(function(){
+        // meh
+      });
     }
   }
   $scope.signedActions.updateOverview();

@@ -188,7 +188,7 @@ class EntryQuery(Query):
         'information_at': QueryFilterEqDate(Entry.created_at)
     }
 
-    csv_headers = ['id', 'user_id', 'user_name', 'lead_id', 'status', 'severity', 'reliability', 'timeline', 'sector', 'crisis_driver', 'vulnerable', 'affected', 'underlying', 'country_code', 'location_self', 'location_geoname', 'location_google', 'created_at']
+    csv_headers = ['id', 'user_id', 'user_name', 'lead_id', 'status', 'severity', 'reliability', 'timeline', 'sector', 'crisis_driver', 'vulnerable', 'affected', 'underlying', 'country_code', 'location_self', 'location_geoname', 'location_google', 'created_at', 'excerpt']
 
     def jsonify(self, row):
         return row.jsonify_complete(acl=const.ACL_READ)
@@ -256,7 +256,8 @@ class EntryQuery(Query):
             self.get_csv_location_block(const.LOCATION_SOURCE_SELF, row['locations']),
             self.get_csv_location_block(const.LOCATION_SOURCE_GEONAME, row['locations']),
             self.get_csv_location_block(const.LOCATION_SOURCE_GOOGLE_MAP_SHAPE, row['locations']),
-            row['created_at']
+            row['created_at'],
+            row['excerpt']
         ]
 
     def postprocess_response_csv(self, res):

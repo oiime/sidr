@@ -23,6 +23,7 @@ def init_routes(app):
     from sidr import resources
 
     app.config['CORS_HEADERS'] = 'Content-Type,Authorization'
+    app.config['UPLOAD_FOLDER'] = '/tmp'
     flask_cors.CORS(app)
     bp_api_v1 = Blueprint('v1_api', __name__, url_prefix='/v1')
     api = init_api(bp_api_v1, app)
