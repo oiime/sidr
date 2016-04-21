@@ -233,7 +233,12 @@ module.exports = function (grunt) {
     // concat: {
     //   dist: {}
     // },
-
+    uglify: {
+       dist: {
+               beautify : true,
+               mangle   : false
+       }
+    },
     imagemin: {
       dist: {
         files: [{

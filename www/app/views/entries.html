@@ -65,7 +65,7 @@
                       </span>
                   </p>
               </td>
-              <td data-title="'Locations'" filter="{ 'locations': 'selector' }", filter-data="locations" style="min-width:100px;">
+              <td data-title="'Locations'" filter="{ 'locations': 'selector' }" filter-data="locations" style="min-width:100px;">
                   <b>{{entry.country_code}}</b>
                   <span ng-repeat="location in entry.locations" ng-if="location.source != CONST.LOCATION_SOURCE_GOOGLE_MAP_SHAPE">
                     {{location.asciiname}}

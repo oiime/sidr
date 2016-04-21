@@ -65,7 +65,6 @@ angular.module('sidrApp')
           'name': null,
           'lead_id': null,
           'excerpt': null,
-          'tags': null,
           'country_code': null,
           'locations': [],
           'tags': {},
